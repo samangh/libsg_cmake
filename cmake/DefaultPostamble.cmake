@@ -1,0 +1,2 @@
+#include(GetAllTargets)
+#include(DoesTargetUseLinker)
