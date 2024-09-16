@@ -1,26 +1,32 @@
-# /Applications/National\ Instruments/LabVIEW\ 2020\ 64-bit/cintools
+set(LABVIEW_MIN_VER 2012 CACHE STRING "Minimum LabVIEW version to use")
+set(LABVIEW_MAX_VER 2020 CACHE STRING "Maximum LabVIEW version to use")
 
-# Use 32-bit visa in x86 and 64-bit in x64 by looking at pointer size
+# Use 32-bit in x86 and 64-bit in x64 by looking at pointer size
 # macOS and Linux only use have 64-bit LabVIEW
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(LABVIEW_HINTS
-    "/Applications/National\ Instruments/LabVIEW\ 2020\ 64-bit/cintools/Mach-O"
-    "/Applications/National\ Instruments/LabVIEW\ 2020\ 64-bit/cintools"
-    "C:\\Program Files\\National Instruments\\LabVIEW 2020\\cintools"
-    "C:\\Program Files\\National Instruments\\LabVIEW 2018\\cintools")
+  foreach(VER RANGE ${LABVIEW_MIN_VERS} ${LABVIEW_MAX_VERS})
+    list(APPEND LABVIEW_HINTS
+      # MacOS
+      "/Applications/National\ Instruments/LabVIEW\ ${VER}\ 64-bit/cintools/Mach-O"
+      "/Applications/National\ Instruments/LabVIEW\ ${VER}\ 64-bit/cintools"
+      #Linux
+      "/usr/local/natinst/LabVIEW-${VER}-64/cintools"
+    #Windows
+    "C:\\Program Files\\National Instruments\\LabVIEW ${VER}\\cintools"
+    "C:\\Program Files\\National Instruments\\LabVIEW ${VER}\\cintools")
+  endforeach()
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-  set(LABVIEW_HINTS
-    "C:\\Program Files (x86)\\National Instruments\\LabVIEW 2020\\cintools"
-	"C:\\Program Files (x86)\\National Instruments\\LabVIEW 2018\\cintools")
+  foreach(VER RANGE ${LABVIEW_MIN_VER} ${LABVIEW_MAX_VER})
+    list(APPEND LABVIEW_HINTS "C:\\Program Files (x86)\\National Instruments\\LabVIEW ${VER}\\cintools")
+  endforeach()
 endif()
-
 
 find_path(LabVIEW_INCLUDE_DIRS
    NAMES extcode.h
    HINTS ${LabVIEW_DIR} ${LabVIEW_DIR}/cintools ${LabVIEW_DIR}/include ${LABVIEW_HINTS})
 
 find_library(LabVIEW_LIBRARIES
-  NAMES labview lvexports
+  NAMES lv labviewv
   HINTS ${LabVIEW_DIR} ${LabVIEW_DIR}/cintools ${LabVIEW_DIR}/lib ${LABVIEW_HINTS} ${LABVIEW_HINTS})
 
 INCLUDE(FindPackageHandleStandardArgs)
