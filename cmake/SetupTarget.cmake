@@ -9,6 +9,7 @@ function(setup_target)
   )
   set(multiValueArgs
     SRC_FILES
+    ADDITTIONAl_SRC_FILES
     INCLUDE_INTERFACE
     INCLUDE_PUBLIC
     INCLUDE_PRIVATE
@@ -56,6 +57,10 @@ function(setup_target)
       ${ARG_DIRECTORY}/src/*.c
       ${ARG_DIRECTORY}/src/*.cc
       ${ARG_DIRECTORY}/src/*.cpp)
+  endif()
+
+  if(ARG_ADDITTIONAl_SRC_FILES)
+    list(APPEND SRC_FILES ${ARG_ADDITTIONAl_SRC_FILES})
   endif()
 
   ##
