@@ -124,14 +124,15 @@ endif()
 ##
 
 string(TOLOWER ${NAMESPACE} NAMESPACE_LOWER)
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 configure_file (
   "${CMAKE_CURRENT_LIST_DIR}/version.h.in"
-  "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${PROJECT_NAME}_version.h"
+  "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${PROJECT_NAME_LOWER}_version.h"
 )
 
 install(
-  FILES "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${PROJECT_NAME}_version.h"
+  FILES "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${PROJECT_NAME_LOWER}_version.h"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${NAMESPACE_LOWER}/export/"
   COMPONENT dev
 )
