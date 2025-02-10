@@ -23,6 +23,26 @@ option (INSTALL_${PROJECT_NAME}_BINARIES "Install project binaries as part of cm
 option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
 # Note, the sanitizer also provides SANITIZE_THREAD and SANITIZE_MEMORY options
 
+option (USE_LIBC++ "Use clang libc++" OFF)
+
+##
+## libc++
+##
+
+if(USE_LIBC++)
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(SEND_ERROR "option USE_LIBC++ is only possible with clang" )
+  endif()
+
+  # Set default, note we can't just set by using target-specific compile options
+  # becausethe get_standard_library_name() doesn't use them
+  #
+  # We also use target_link_options() etc in SetupTargets() to make sure
+  # all targets and their depdencies use libc++
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+endif()
+
 ##
 ## Static linking (Windows)
 ##
