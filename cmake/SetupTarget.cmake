@@ -180,9 +180,6 @@ function(setup_target)
       ${ARG_COMPILE_OPTIONS_INTERFACE}
     PUBLIC
       ${ARG_COMPILE_OPTIONS_PUBLIC}
-
-      # If we are using libc++, then all our dependencies must too
-      $<$<AND:$<CXX_COMPILER_ID:Clang>,$<STREQUAL:${STANDARD_LIBRARY},c++>>:-stdlib=libc++>
     PRIVATE
       ${ARG_COMPILE_OPTIONS_PRIVATE}
       #Warnings
@@ -203,9 +200,6 @@ function(setup_target)
       ${ARG_LINK_OPTIONS_INTERFACE}
     PUBLIC
       ${ARG_LINK_OPTIONS_PUBLIC}
-
-      # If we are using libc++, then all our dependencies must too
-      $<$<AND:$<CXX_COMPILER_ID:Clang>,$<STREQUAL:${STANDARD_LIBRARY},c++>>:-stdlib=libc++ -lc++abi>
     PRIVATE
       ${ARG_LINK_OPTIONS_PRIVATE}
   )
