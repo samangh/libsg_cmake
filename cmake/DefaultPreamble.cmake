@@ -40,7 +40,7 @@ if(USE_LIBC++)
   # We also use target_link_options() etc in SetupTargets() to make sure
   # all targets and their depdencies use libc++
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 endif()
 
 ##
