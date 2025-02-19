@@ -4,6 +4,7 @@ function(setup_target)
     EXECUTABLE
     INSTALL_HEADERS
     INSTALL_BINARIES
+    DONT_RECURSE_SRC_DIR
     GENERATE_EXPORT_HEADER   #Libraries only
     STATIC                   #Libraries only
   )
@@ -52,7 +53,9 @@ function(setup_target)
   ##
   ## Source files
   ##
-  if(NOT ARG_SRC_FILES)
+  if(ARG_SRC_FILES OR ARG_DONT_RECURSE_SRC_DIR)
+    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
+  else()
     file(GLOB_RECURSE ARG_SRC_FILES
       ${ARG_DIRECTORY}/src/*.c
       ${ARG_DIRECTORY}/src/*.cc
