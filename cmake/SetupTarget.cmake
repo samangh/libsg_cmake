@@ -7,6 +7,7 @@ function(setup_target)
     DONT_RECURSE_SRC_DIR
     GENERATE_EXPORT_HEADER   #Libraries only
     STATIC                   #Libraries only
+    SHARED                   #Libraries only
   )
   set(multiValueArgs
     SRC_FILES
@@ -99,6 +100,8 @@ function(setup_target)
   if(ARG_LIBRARY)
     if(ARG_STATIC)
       add_library(${ARG_TARGET} STATIC ${ARG_SRC_FILES})
+    elseif(ARG_SHARED)
+      add_library(${ARG_TARGET} SHARED ${ARG_SRC_FILES})
     else()
       add_library(${ARG_TARGET} ${ARG_SRC_FILES})
     endif()
