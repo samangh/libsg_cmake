@@ -26,8 +26,8 @@ option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
 option (USE_LIBC++ "Use clang libc++" OFF)
 
 # Commonly used packages
-option(OWN_LIBUV "Use our own copy of libuv" OFF)
-option(OWN_LIBFMT "Use own libfmt" OFF)
+option(OWN_UV "Use our own copy of libuv" OFF)
+option(OWN_FMT "Use own libfmt" OFF)
 
 ##
 ## libc++
@@ -143,7 +143,7 @@ if(SANITIZE)
   set(SANITIZE_UNDEFINED ON)
 endif()
 
-if(OWN_LIBFMT)
+if(OWN_FMT)
 CPMAddPackage(NAME fmt
   GITHUB_REPOSITORY fmtlib/fmt
   GIT_TAG 11.1.4
@@ -154,7 +154,7 @@ CPMAddPackage(NAME fmt
 )
 endif()
 
-if(OWN_LIBUV)
+if(OWN_UV)
 CPMAddPackage(NAME libuv
   GITHUB_REPOSITORY libuv/libuv
   VERSION 1.50.0
