@@ -1,9 +1,11 @@
 # Checks for the following CPU flags (and support by compiler)
 #
-# Components: SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512
+# Components: SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL
 
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
+
+set(SSE_POSSIBLE_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL)
 
 ##
 ## _SSE_set_target
@@ -89,7 +91,7 @@ endif()
 ##
 
 # A component, say SSE41, is found if _SSE41_SUPPORTED is set
-foreach(comp ${SSE_FIND_COMPONENTS})
+foreach(comp ${SSE_POSSIBLE_COMPONENTS})
   if (_${comp}_SUPPORTED)
     set(SSE_${comp}_FOUND _${comp}_SUPPORTED)
   endif()
@@ -146,5 +148,19 @@ _SSE_set_target(FEATURE CRC32
 _SSE_set_target(FEATURE CLMUL
   GCC_FLAG "-mpclmul"
   CLANG_FLAG "-mpclmul")
+
+##
+## Amalgate all available components into SSE / SSE::SSE targets
+##
+
+if(SSE_FOUND AND NOT TARGET SSE)
+  add_library(SSE INTERFACE)
+  add_library(SSE::SSE ALIAS SSE)
+  foreach(comp ${SSE_POSSIBLE_COMPONENTS})
+    if (_${comp}_SUPPORTED)
+      target_link_libraries(SSE INTERFACE SSE_${comp})
+    endif()
+  endforeach()
+endif()
 
 mark_as_advanced(SSE_FOUND)

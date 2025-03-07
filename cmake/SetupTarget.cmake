@@ -156,9 +156,7 @@ function(setup_target)
       $<$<AND:$<CXX_COMPILER_ID:Clang>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:${STANDARD_LIBRARY}fs>
     PRIVATE
       ${ARG_LINK_PRIVATE}
-      # Enable SSE if
-      $<$<AND:$<BOOL:${USE_SSE}>,$<BOOL:${SSE_SSE42_FOUND}>>:SSE::SSE42>
-      $<$<AND:$<BOOL:${USE_SSE}>,$<BOOL:${SSE_AVX2_FOUND}>>:SSE::AVX2>)
+      $<$<BOOL:${USE_SSE}>:SSE::SSE>)
 
   ##
   ## Compiler features/options
