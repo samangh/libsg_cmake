@@ -42,7 +42,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR
       NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm"))
   check_cpu_flag(CPU_FLAG sse COMPILER_FLAG -msse OUTPUT_VARIABLE _SSE_SUPPORTED)
   check_cpu_flag(CPU_FLAG sse2 COMPILER_FLAG -msse2 OUTPUT_VARIABLE _SSE2_SUPPORTED)
-  check_cpu_flag(CPU_FLAG ssse3 COMPILER_FLAG -msse3 OUTPUT_VARIABLE _SSSE3_SUPPORTED)
+  check_cpu_flag(CPU_FLAG ssse3 COMPILER_FLAG -mssse3 OUTPUT_VARIABLE _SSSE3_SUPPORTED)
   check_cpu_flag(CPU_FLAG sse4_1 COMPILER_FLAG -msse4.1 OUTPUT_VARIABLE _SSE41_SUPPORTED)
   check_cpu_flag(CPU_FLAG sse4_2 COMPILER_FLAG -msse4.2 OUTPUT_VARIABLE _SSE42_SUPPORTED)
   check_cpu_flag(CPU_FLAG pni COMPILER_FLAG -msse3 OUTPUT_VARIABLE _SSE3_SUPPORTED)
@@ -78,7 +78,7 @@ if(MSYS OR MINGW)
   check_cxx_compiler_flag("-msse3" _SSE3_SUPPORTED)
   check_cxx_compiler_flag("-msse4.1" _SSE41_SUPPORTED)
   check_cxx_compiler_flag("-msse4.2" _SSE42_SUPPORTED)
-  check_cxx_compiler_flag("-msse3" _SSSE3_SUPPORTED)
+  check_cxx_compiler_flag("-mssse3" _SSSE3_SUPPORTED)
   check_cxx_compiler_flag("-mavx" _AVX_SUPPORTED)
   check_cxx_compiler_flag("-mavx2" _AVX2_SUPPORTED)
   check_cxx_compiler_flag("-mpclmul" _CLMUL_SUPPORTED)
@@ -119,7 +119,11 @@ _sse_set_target(FEATURE SSE3
   GCC_FLAG "-msse3"
   CLANG_FLAG "-msse3")
 
-_sse_set_target(FEATURE SSE3
+_sse_set_target(FEATURE SSSE3
+  GCC_FLAG "-mssse3"
+  CLANG_FLAG "-mssse3")
+
+_sse_set_target(FEATURE SSE41
   GCC_FLAG "-msse4.1"
   CLANG_FLAG "-msse4.1")
 
