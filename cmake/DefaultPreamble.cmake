@@ -79,6 +79,33 @@ if(IPO)
 endif()
 
 ##
+## SSE architecture
+##
+
+# We use CXX_CMAKE_FLAGS here because we would like SSE to be enabled
+# for all targets, event ones that are added usign FecthPacakge,
+# CPMAddPacakge, etc.
+
+function(_use_sse)
+    find_package(SSE OPTIONAL_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SSE_CXX_FLAGS}" PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SSE_C_FLAGS}" PARENT_SCOPE)
+endfunction()
+
+if(MSVC)
+  if(USE_SSE OR ARCH_NATIVE)
+    _use_sse()
+  endif()
+else()
+  if(ARCH_NATIVE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+  elseif(USE_SSE)
+    _use_sse()
+  endif()
+endif()
+
+##
 ## IDE support
 ##
 
@@ -86,10 +113,6 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# This enables all available SSE features, if available
-if(USE_SSE)
-  find_package(SSE OPTIONAL_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL)
-endif()
 
 ##
 ## CMake module paths

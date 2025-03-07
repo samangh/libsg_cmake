@@ -26,6 +26,17 @@ function(_SSE_set_target)
       $<$<CXX_COMPILER_ID:GNU>:${ARG_GCC_FLAG}>
       $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:${ARG_CLANG_FLAG}>
       $<$<CXX_COMPILER_ID:MSVC>:${ARG_MSVC_FLAG}>)
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_MSVC_FLAG}" PARENT_SCOPE)
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_GCC_FLAG}" PARENT_SCOPE)
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
+    endif()
+
     target_compile_definitions(SSE_${ARG_FEATURE} INTERFACE CPU_SUPPORTS_${ARG_FEATURE})
 
     add_library(SSE::${ARG_FEATURE} ALIAS SSE_${ARG_FEATURE})
@@ -186,4 +197,10 @@ find_package_handle_standard_args(SSE
   VERSION_VAR SSE_VERSION
   HANDLE_COMPONENTS)
 
-mark_as_advanced(SSE_FOUND)
+# Export C and CXX flags to make them global
+set(SSE_CXX_FLAGS ${_CXX_FLAGS})
+set(SSE_C_FLAGS ${_CXX_FLAGS})
+unset(_CXX_FLAGS)
+
+mark_as_advanced(SSE_FOUND SSE_CXX_FLAGS)
+

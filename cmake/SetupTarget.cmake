@@ -155,8 +155,7 @@ function(setup_target)
       $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.1>>:${STANDARD_LIBRARY}fs>
       $<$<AND:$<CXX_COMPILER_ID:Clang>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:${STANDARD_LIBRARY}fs>
     PRIVATE
-      ${ARG_LINK_PRIVATE}
-      $<$<BOOL:${USE_SSE}>:SSE::SSE>)
+      ${ARG_LINK_PRIVATE})
 
   ##
   ## Compiler features/options
@@ -189,9 +188,6 @@ function(setup_target)
       #Warnings
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
       $<$<CXX_COMPILER_ID:MSVC>:/permissive->
-
-      # Set arch to native (i.e. use all processor flags)
-      $<$<AND:$<BOOL:${ARCH_NATIVE}>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-march=native>
 
       # Enable __cpluscplus header in MSVC for getting C++ version
       $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>)
