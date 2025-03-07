@@ -61,14 +61,16 @@ endif()
 
 if(MSVC)
   # Don't know how to check in Windows
+  check_cxx_compiler_flag("/arch:SSE2" _SSE2_SUPPORTED)
+  check_cxx_compiler_flag("/d2archSSE42" _SSE42_SUPPORTED)
+
   check_cxx_compiler_flag("/arch:AVX" _AVX_SUPPORTED)
   check_cxx_compiler_flag("/arch:AVX2" _AVX2_SUPPORTED)
   check_cxx_compiler_flag("/arch:AVX512" _AVX512_SUPPORTED)
-  check_cxx_compiler_flag("/d2archSSE42" _SSE42_SUPPORTED)
 
-  # Set everything else true
-  foreach(c SSE SSE2 SSE3 SSE41 SSSE3 CLMUL CRC32)
-    set(_${c}_SUPPORTED true)
+  # MSVC can't checkor SSE2-4.1, so just check for 4.2
+  foreach(comp SSE3 SSSE3 SSE41)
+    set(_${COMP}_SUPPORTED ${_SSE42_SUPPORTED})
   endforeach()
 endif()
 
@@ -96,12 +98,6 @@ foreach(comp ${SSE_POSSIBLE_COMPONENTS})
     set(SSE_${comp}_FOUND _${comp}_SUPPORTED)
   endif()
 endforeach()
-
-##
-## Find package
-##
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SSE HANDLE_COMPONENTS)
 
 ##
 ## Set alias libraries
@@ -157,7 +153,7 @@ _SSE_set_target(FEATURE CLMUL
 ## Amalgate all available components into SSE / SSE::SSE targets
 ##
 
-if(SSE_FOUND AND NOT TARGET SSE)
+if(NOT TARGET SSE)
   add_library(SSE INTERFACE)
   add_library(SSE::SSE ALIAS SSE)
   foreach(comp ${SSE_POSSIBLE_COMPONENTS})
@@ -165,6 +161,29 @@ if(SSE_FOUND AND NOT TARGET SSE)
       target_link_libraries(SSE INTERFACE SSE_${comp})
     endif()
   endforeach()
+
+  if(TARGET SSE::SSE41)
+    set(SSE_VERSION 4.2)
+  elseif(TARGET SSE::SSE41)
+    set(SSE_VERSION 4.1)
+  elseif(TARGET SSE::SSE4)
+    set(SSE_VERSION 4)
+  elseif(TARGET SSE::SSSE3)
+    set(SSE_VERSION 4)
+  elseif(TARGET SSE::SSE3)
+    set(SSE_VERSION 3)
+  elseif(TARGET SSE::SSE2)
+    set(SSE_VERSION 2)
+  endif()
 endif()
+
+##
+## Find package
+##
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SSE
+  VERSION_VAR SSE_VERSION
+  HANDLE_COMPONENTS)
 
 mark_as_advanced(SSE_FOUND)
