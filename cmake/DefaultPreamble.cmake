@@ -114,6 +114,12 @@ if(NOT SSE_OR_NATIVE_SET)
   set(SSE_OR_NATIVE_SET)
 endif()
 
+## Enable the CPU_SUPPORTS_xxx flags. this is useful if the SSE package
+## is not loaded, but the arch or features is manually set but the
+## user. For example, if they do CMAKE_CXX_FLGS="-march=haswell".
+include(CheckSSEFeatures)
+check_sse_features()
+
 ##
 ## IDE support
 ##
