@@ -5,7 +5,11 @@
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
 
-set(SSE_POSSIBLE_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL)
+# There are the components that will get added to CXX_CMAKE_FLAGS, for
+# all targets if the SSE package is loaded
+set(SSE_DEFAULT_COMPONENTS SSE42 AVX AVX2 CLMUL)
+
+set(SSE_POSSIBLE_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CLMUL)
 
 ##
 ## _SSE_set_target
@@ -27,14 +31,16 @@ function(_SSE_set_target)
       $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:${ARG_CLANG_FLAG}>
       $<$<CXX_COMPILER_ID:MSVC>:${ARG_MSVC_FLAG}>)
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_MSVC_FLAG}" PARENT_SCOPE)
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_GCC_FLAG}" PARENT_SCOPE)
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-      set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
+    if(${ARG_FEATURE} IN_LIST SSE_DEFAULT_COMPONENTS)
+      if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_MSVC_FLAG}" PARENT_SCOPE)
+      elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_GCC_FLAG}" PARENT_SCOPE)
+      elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
+      elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        set(_CXX_FLAGS "${_CXX_FLAGS} ${ARG_CLANG_FLAG}" PARENT_SCOPE)
+      endif()
     endif()
 
     target_compile_definitions(SSE_${ARG_FEATURE} INTERFACE CPU_SUPPORTS_${ARG_FEATURE})
@@ -60,7 +66,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR
   check_cpu_flag(CPU_FLAG avx COMPILER_FLAG -mavx OUTPUT_VARIABLE _AVX_SUPPORTED)
   check_cpu_flag(CPU_FLAG avx2 COMPILER_FLAG -mavx2 OUTPUT_VARIABLE _AVX2_SUPPORTED)
   check_cpu_flag(CPU_FLAG pclmulqdq COMPILER_FLAG -mpclmul OUTPUT_VARIABLE _CLMUL_SUPPORTED)
-  check_cxx_compiler_flag("-mcrc32" _CRC32_SUPPORTED)
 
   # SSE3 is known as the Prescott New Instructions (PNI) on Linux
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -95,7 +100,6 @@ if(MSYS OR MINGW)
   check_cxx_compiler_flag("-mavx" _AVX_SUPPORTED)
   check_cxx_compiler_flag("-mavx2" _AVX2_SUPPORTED)
   check_cxx_compiler_flag("-mpclmul" _CLMUL_SUPPORTED)
-  check_cxx_compiler_flag("-mcrc32" _CRC32_SUPPORTED)
   check_cxx_compiler_flag("-msse3" _SSE3_SUPPORTED)
 endif()
 
@@ -152,10 +156,6 @@ _sse_set_target(FEATURE AVX2
 _sse_set_target(FEATURE AVX512
   MSVC_FLAG "/arch:AVX512")
 
-_SSE_set_target(FEATURE CRC32
-  GCC_FLAG "-mcrc32"
-  CLANG_FLAG "-mcrc32")
-
 _SSE_set_target(FEATURE CLMUL
   GCC_FLAG "-mpclmul"
   CLANG_FLAG "-mpclmul")
@@ -167,7 +167,7 @@ _SSE_set_target(FEATURE CLMUL
 if(NOT TARGET SSE)
   add_library(SSE INTERFACE)
   add_library(SSE::SSE ALIAS SSE)
-  foreach(comp ${SSE_POSSIBLE_COMPONENTS})
+  foreach(comp ${SSE_DEFAULT_COMPONENTS})
     if (_${comp}_SUPPORTED)
       target_link_libraries(SSE INTERFACE SSE_${comp})
     endif()
