@@ -1,6 +1,6 @@
 # Checks for the following CPU flags (and support by compiler)
 #
-# Components: SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CRC32 CLMUL
+# Components: SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CLMUL
 
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
@@ -86,8 +86,13 @@ if(MSVC)
 
   # MSVC can't checkor SSE2-4.1, so just check for 4.2
   foreach(comp SSE3 SSSE3 SSE41)
-    set(_${COMP}_SUPPORTED ${_SSE42_SUPPORTED})
+    set(_${comp}_SUPPORTED ${_SSE42_SUPPORTED})
   endforeach()
+
+  # CLMUl is 64-bit only (I think!)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(_CLMUL_SUPPORTED ${_SSE42_SUPPORTED})
+  endif()
 endif()
 
 if(MSYS OR MINGW)
