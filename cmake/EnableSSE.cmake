@@ -5,7 +5,7 @@
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
 
-set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL)
+set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM+CRC ARM+AES)
 
 ##
 ## Check CPU architecture
