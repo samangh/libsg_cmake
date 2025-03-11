@@ -5,7 +5,7 @@
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
 
-set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM+CRC ARM+AES)
+set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM_CRC ARM_AES)
 
 ##
 ## Check CPU architecture
@@ -157,7 +157,7 @@ function(internal_check_sse FEATURE)
   endif()
 
   if(CPU_ARCH STREQUAL "ARM")
-    if(FEATURE STREQUAL "ARM+CRC")
+    if(FEATURE STREQUAL "ARM_CRC")
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-mcrc"
         CLANG_FLAG "-mcrc"
@@ -176,7 +176,7 @@ function(internal_check_sse FEATURE)
          auto crc32 = __crc32d(0, *(uint64_t *)data);
          return 0;
        }")
-    elseif(FEATURE STREQUAL "ARM+AES")
+    elseif(FEATURE STREQUAL "ARM_AES")
       internal_enable_SSE(${FEATURE}
         # Can't enabled this, without doing -march=armv8-1+aes for example
         GCC_FLAG ""

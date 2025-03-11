@@ -109,7 +109,7 @@ macro(_use_sse)
       enable_sse(AVX2 REQUIRED)
       enable_sse(CLMUL) #Only supported on 64-bit systems
   elseif(ARM)
-      enable_sse(ARM+CRC)
+      enable_sse(ARM_CRC)
   endif()
 endmacro()
 
