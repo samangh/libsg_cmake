@@ -82,22 +82,19 @@ endif()
 ## SSE architecture
 ##
 
-# We use CXX_CMAKE_FLAGS here because we would like SSE to be enabled
-# for all targets, event ones that are added usign FetchPacakge,
-# CPMAddPacakge, etc.
-#
-# But we onlt consider this only once (at this scope level), so that duplicated flags
+include(EnableSSE)
+
+# But we only consider this only once (at this scope level), so that duplicated flags
 # are not added for any libraries or projects that we add at this level
 # or below
 
 macro(_use_sse)
-  find_package(SSE OPTIONAL_COMPONENTS SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 AVX512 CLMUL)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SSE_CXX_FLAGS}")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SSE_C_FLAGS}")
+      enable_sse(SSE42)
+      enable_sse(AVX2)
+      enable_sse(CLMUL)
 endmacro()
 
 if(NOT SSE_OR_NATIVE_SET)
-
   if(MSVC)
     if(USE_SSE OR ARCH_NATIVE)
       _use_sse()
@@ -110,15 +107,13 @@ if(NOT SSE_OR_NATIVE_SET)
       _use_sse()
     endif()
   endif()
-
   set(SSE_OR_NATIVE_SET)
 endif()
 
 ## Enable the CPU_SUPPORTS_xxx flags. this is useful if the SSE package
 ## is not loaded, but the arch or features is manually set but the
 ## user. For example, if they do CMAKE_CXX_FLGS="-march=haswell".
-include(CheckSSEFeatures)
-check_sse_features()
+check_parent_sse_features()
 
 ##
 ## IDE support
