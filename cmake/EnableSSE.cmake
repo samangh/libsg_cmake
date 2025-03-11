@@ -161,7 +161,6 @@ function(internal_check_sse FEATURE)
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-mcrc"
         CLANG_FLAG "-mcrc"
-        MSVC_FLAG ""
         TEST_CODE
         "#include <cstddef>
        #include <cstdint>
@@ -179,9 +178,6 @@ function(internal_check_sse FEATURE)
     elseif(FEATURE STREQUAL "ARM_AES")
       internal_enable_SSE(${FEATURE}
         # Can't enabled this, without doing -march=armv8-1+aes for example
-        GCC_FLAG ""
-        CLANG_FLAG ""
-        MSVC_FLAG ""
         TEST_CODE
         "#include <cstddef>
          #include <cstdint>
