@@ -79,6 +79,20 @@ if(IPO)
 endif()
 
 ##
+## CPU Architecture
+##
+
+include(GetProcessor)
+get_processor(CPU_ARCH)
+
+if(CPU_ARCH STREQUAL "X86")
+  set(X86 TRUE)
+elseif(CPU_ARCH STREQUAL "ARM")
+  set(ARM TRUE)
+endif()
+
+
+##
 ## SSE architecture
 ##
 
@@ -89,9 +103,12 @@ include(EnableSSE)
 # or below
 
 macro(_use_sse)
-      enable_sse(SSE42)
-      enable_sse(AVX2)
-      enable_sse(CLMUL)
+  if(X86)
+      enable_sse(SSE42 REQUIRED)
+      enable_sse(AVX2 REQUIRED)
+      enable_sse(CLMUL) #Only supported on 64-bit systems
+  elseif(ARM)
+  endif()
 endmacro()
 
 if(NOT SSE_OR_NATIVE_SET)

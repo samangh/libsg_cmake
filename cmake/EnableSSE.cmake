@@ -11,7 +11,7 @@ set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL)
 ## _SSE_set_target
 ##
 
-function(_enable_SSE FEATURE)
+function(internal_enable_SSE FEATURE)
   set(options "")
   set(multiValueArgs "")
   set(oneValueArgs GCC_FLAG CLANG_FLAG MSVC_FLAG TEST_CODE)
@@ -28,10 +28,10 @@ function(_enable_SSE FEATURE)
     set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
   endif()
 
-  check_cxx_source_compiles("${ARG_TEST_CODE}" HAVE_${FEATURE})
+  check_cxx_source_compiles("${ARG_TEST_CODE}" HAVE)
 
   # Set CXX flags if requested
-  if(HAVE_${FEATURE})
+  if(HAVE)
     add_compile_definitions(CPU_SUPPORTS_${FEATURE})
     if(NOT CMAKE_CXX_FLAGS MATCHES ".* ${CMAKE_REQUIRED_FLAGS} .*")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_REQUIRED_FLAGS} " PARENT_SCOPE)
@@ -41,12 +41,12 @@ function(_enable_SSE FEATURE)
     endif()
   endif()
 
-  set(CPU_SUPPORTS_${FEATURE} TRUE PARENT_SCOPE)
+  set(CPU_SUPPORTS_${FEATURE} ${HAVE} PARENT_SCOPE)
 endfunction()
 
-function(_check_sse FEATURE)
+function(internal_check_sse FEATURE)
   if(FEATURE STREQUAL "SSE42")
-    _enable_SSE(${FEATURE}
+    internal_enable_SSE(${FEATURE}
       GCC_FLAG "-msse4.2"
       CLANG_FLAG "-msse4.2"
       MSVC_FLAG "/d2archSSE42"
@@ -67,7 +67,7 @@ function(_check_sse FEATURE)
          }")
     elseif(FEATURE STREQUAL "AVX")
     #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
-    _enable_SSE(${FEATURE}
+    internal_enable_SSE(${FEATURE}
       GCC_FLAG "-mavx"
       CLANG_FLAG "-mavx"
       MSVC_FLAG "/arch:AVX"
@@ -91,7 +91,7 @@ function(_check_sse FEATURE)
         }")
   elseif(FEATURE STREQUAL "AVX2")
     #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
-    _enable_SSE(${FEATURE}
+    internal_enable_SSE(${FEATURE}
       GCC_FLAG "-mavx2"
       CLANG_FLAG "-mavx2"
       MSVC_FLAG "/arch:AVX2"
@@ -114,7 +114,7 @@ function(_check_sse FEATURE)
           return 0;
         }")
   elseif(FEATURE STREQUAL "AVX512")
-    _enable_SSE(${FEATURE}
+    internal_enable_SSE(${FEATURE}
       GCC_FLAG "-mavx512"
       CLANG_FLAG "-mavx512"
       MSVC_FLAG "/arch:AVX512"
@@ -135,7 +135,7 @@ function(_check_sse FEATURE)
          return 0;
        }")
   elseif(FEATURE STREQUAL "CLMUL")
-    _enable_SSE(${FEATURE}
+    internal_enable_SSE(${FEATURE}
       GCC_FLAG "-mpclmul"
       CLANG_FLAG "-mpclmul"
       MSVC_FLAG "/d2archSSE42"
@@ -151,28 +151,35 @@ function(_check_sse FEATURE)
   # Propogate variables to parent
   set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
   set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} PARENT_SCOPE)
-  set(CPU_SUPPORTS_${FEATURE} CPU_SUPPORTS_${FEATURE} PARENT_SCOPE)
+  set(CPU_SUPPORTS_${FEATURE} ${CPU_SUPPORTS_${FEATURE}} PARENT_SCOPE)
 endfunction()
 
 function(enable_sse FEATURE)
-  _check_sse(${FEATURE} TRUE)
-  if(NOT CPU_SUPPORTS_${FEATURE})
+  set(options REQUIRED)
+  set(multiValueArgs "")
+  set(oneValueArgs "")
+  cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
+  internal_check_sse(${FEATURE})
+  if(ARG_REQUIRED AND NOT CPU_SUPPORTS_${FEATURE})
     message(SEND_ERROR "SSE feature ${FEATURE} not supported on this system.")
   endif()
 
-  # Propoage variables to parent
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
-  set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} PARENT_SCOPE)
-  set(CPU_SUPPORTS_${FEATURE} CPU_SUPPORTS_${FEATURE} PARENT_SCOPE)
+  # Propoage variables to parents
+  if(CPU_SUPPORTS_${FEATURE})
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
+    set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} PARENT_SCOPE)
+    set(CPU_SUPPORTS_${FEATURE} ${CPU_SUPPORTS_${FEATURE}} PARENT_SCOPE)
+  endif()
 endfunction()
 
 # Sets the CPU_SUPPORTS_xxxx definitions, but nothing else
 function(check_parent_sse_features)
   foreach(feature in ${SSE_FEATURES})
-    _check_sse(${feature} FALSE)
-  endforeach()
+    internal_check_sse(${feature})
 
-  #Note, we don't propoage the CMAKE_CXX_... variables to parent
-  set(CPU_SUPPORTS_${FEATURE} CPU_SUPPORTS_${FEATURE} PARENT_SCOPE)
+    #Note, we don't propoage the CMAKE_CXX_... variables to parent
+    set(CPU_SUPPORTS_${feature} ${CPU_SUPPORTS_${feature}} PARENT_SCOPE)
+  endforeach()
 endfunction()
 
