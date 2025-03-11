@@ -91,6 +91,7 @@ elseif(CPU_ARCH STREQUAL "ARM")
   set(ARM TRUE)
 endif()
 
+message(STATUS "Detected CPU architecture: ${CPU_ARCH} (${CMAKE_SYSTEM_PROCESSOR})")
 
 ##
 ## SSE architecture
@@ -108,6 +109,7 @@ macro(_use_sse)
       enable_sse(AVX2 REQUIRED)
       enable_sse(CLMUL) #Only supported on 64-bit systems
   elseif(ARM)
+      enable_sse(ARM+CRC)
   endif()
 endmacro()
 

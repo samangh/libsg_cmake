@@ -8,6 +8,12 @@ include(check_cpu_flag)
 set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL)
 
 ##
+## Check CPU architecture
+##
+include(GetProcessor)
+get_processor(CPU_ARCH)
+
+##
 ## _SSE_set_target
 ##
 
@@ -28,10 +34,10 @@ function(internal_enable_SSE FEATURE)
     set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
   endif()
 
-  check_cxx_source_compiles("${ARG_TEST_CODE}" HAVE)
+  check_cxx_source_compiles("${ARG_TEST_CODE}" HAVE_${FEATURE})
 
   # Set CXX flags if requested
-  if(HAVE)
+  if(HAVE_${FEATURE})
     add_compile_definitions(CPU_SUPPORTS_${FEATURE})
     if(NOT CMAKE_CXX_FLAGS MATCHES ".* ${CMAKE_REQUIRED_FLAGS} .*")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_REQUIRED_FLAGS} " PARENT_SCOPE)
@@ -41,17 +47,18 @@ function(internal_enable_SSE FEATURE)
     endif()
   endif()
 
-  set(CPU_SUPPORTS_${FEATURE} ${HAVE} PARENT_SCOPE)
+  set(CPU_SUPPORTS_${FEATURE} ${HAVE_${FEATURE}} PARENT_SCOPE)
 endfunction()
 
 function(internal_check_sse FEATURE)
-  if(FEATURE STREQUAL "SSE42")
-    internal_enable_SSE(${FEATURE}
-      GCC_FLAG "-msse4.2"
-      CLANG_FLAG "-msse4.2"
-      MSVC_FLAG "/d2archSSE42"
-      TEST_CODE
-      "#if defined(_MSC_VER)
+  if(CPU_ARCH STREQUAL "X86")
+    if(FEATURE STREQUAL "SSE42")
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-msse4.2"
+        CLANG_FLAG "-msse4.2"
+        MSVC_FLAG "/d2archSSE42"
+        TEST_CODE
+        "#if defined(_MSC_VER)
          #include <intrin.h>
          #else  // !defined(_MSC_VER)
          #include <cpuid.h>
@@ -66,13 +73,13 @@ function(internal_check_sse FEATURE)
            return 0;
          }")
     elseif(FEATURE STREQUAL "AVX")
-    #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
-    internal_enable_SSE(${FEATURE}
-      GCC_FLAG "-mavx"
-      CLANG_FLAG "-mavx"
-      MSVC_FLAG "/arch:AVX"
-      TEST_CODE
-      "#include <immintrin.h>
+      #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-mavx"
+        CLANG_FLAG "-mavx"
+        MSVC_FLAG "/arch:AVX"
+        TEST_CODE
+        "#include <immintrin.h>
         int main()
         {
           __m256 a, b, c;
@@ -89,14 +96,14 @@ function(internal_check_sse FEATURE)
           }
           return 0;
         }")
-  elseif(FEATURE STREQUAL "AVX2")
-    #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
-    internal_enable_SSE(${FEATURE}
-      GCC_FLAG "-mavx2"
-      CLANG_FLAG "-mavx2"
-      MSVC_FLAG "/arch:AVX2"
-      TEST_CODE
-      " #include <immintrin.h>
+    elseif(FEATURE STREQUAL "AVX2")
+      #From https://gist.github.com/UnaNancyOwen/263c243ae1e05a2f9d0e
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-mavx2"
+        CLANG_FLAG "-mavx2"
+        MSVC_FLAG "/arch:AVX2"
+        TEST_CODE
+        " #include <immintrin.h>
         int main()
         {
           __m256i a, b, c;
@@ -113,13 +120,13 @@ function(internal_check_sse FEATURE)
           }
           return 0;
         }")
-  elseif(FEATURE STREQUAL "AVX512")
-    internal_enable_SSE(${FEATURE}
-      GCC_FLAG "-mavx512"
-      CLANG_FLAG "-mavx512"
-      MSVC_FLAG "/arch:AVX512"
-      TEST_CODE
-      "#include <immintrin.h>
+    elseif(FEATURE STREQUAL "AVX512")
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-mavx512"
+        CLANG_FLAG "-mavx512"
+        MSVC_FLAG "/arch:AVX512"
+        TEST_CODE
+        "#include <immintrin.h>
        int main()
        {
          __m512i a = _mm512_set_epi8(0, 0, 0, 0, 0, 0, 0, 0,
@@ -134,19 +141,61 @@ function(internal_check_sse FEATURE)
          __mmask64 equality_mask = _mm512_cmp_epi8_mask(a, b, _MM_CMPINT_EQ);
          return 0;
        }")
-  elseif(FEATURE STREQUAL "CLMUL")
-    internal_enable_SSE(${FEATURE}
-      GCC_FLAG "-mpclmul"
-      CLANG_FLAG "-mpclmul"
-      MSVC_FLAG "/d2archSSE42"
-      TEST_CODE
-      "#include <immintrin.h>
+    elseif(FEATURE STREQUAL "CLMUL")
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-mpclmul"
+        CLANG_FLAG "-mpclmul"
+        MSVC_FLAG "/d2archSSE42"
+        TEST_CODE
+        "#include <immintrin.h>
        int main()
        {
          auto a = _mm_clmulepi64_si128(_mm_cvtsi64_si128(1), _mm_cvtsi64_si128(2), 0);
          return 0;
        }")
+    endif()
   endif()
+
+  if(CPU_ARCH STREQUAL "ARM")
+    if(FEATURE STREQUAL "ARM+CRC")
+      internal_enable_SSE(${FEATURE}
+        GCC_FLAG "-mcrc"
+        CLANG_FLAG "-mcrc"
+        MSVC_FLAG ""
+        TEST_CODE
+        "#include <cstddef>
+       #include <cstdint>
+
+       #include <arm_acle.h>
+       #include <arm_neon.h>
+
+       int main()
+       {
+         uint64_t data;
+         auto crc32c = __crc32cd(0, *(uint64_t *)data);
+         auto crc32 = __crc32d(0, *(uint64_t *)data);
+         return 0;
+       }")
+    elseif(FEATURE STREQUAL "ARM+AES")
+      internal_enable_SSE(${FEATURE}
+        # Can't enabled this, without doing -march=armv8-1+aes for example
+        GCC_FLAG ""
+        CLANG_FLAG ""
+        MSVC_FLAG ""
+        TEST_CODE
+        "#include <cstddef>
+         #include <cstdint>
+         #include <arm_acle.h>
+         #include <arm_neon.h>
+
+         int main()
+         {
+           vmull_p64(0, 0); //part of arm AES extension
+           return 0;
+         }")
+    endif()
+  endif()
+
 
   # Propogate variables to parent
   set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
