@@ -189,8 +189,9 @@ function(internal_check_sse FEATURE)
          return 0;
        }")
     elseif(FEATURE STREQUAL "ARM_AES")
+      # Can't enabled this, without doing -march=armv8-1+aes for example
       internal_enable_SSE(${FEATURE}
-        # Can't enabled this, without doing -march=armv8-1+aes for example
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <cstddef>
          #include <cstdint>
@@ -218,7 +219,7 @@ function(enable_sse FEATURE)
   set(oneValueArgs "")
   cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
-  internal_check_sse(${FEATURE} CHECK_WITH_FLAGS)
+  internal_check_sse(${FEATURE} CHECK_WITH_FLAGS TRUE)
   if(ARG_REQUIRED AND NOT CPU_SUPPORTS_${FEATURE})
     message(SEND_ERROR "SSE feature ${FEATURE} not supported on this system.")
   endif()
