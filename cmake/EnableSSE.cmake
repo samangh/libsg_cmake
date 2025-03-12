@@ -20,18 +20,20 @@ get_processor(CPU_ARCH)
 function(internal_enable_SSE FEATURE)
   set(options "")
   set(multiValueArgs "")
-  set(oneValueArgs GCC_FLAG CLANG_FLAG MSVC_FLAG TEST_CODE)
+  set(oneValueArgs CHECK_WITH_FLAGS GCC_FLAG CLANG_FLAG MSVC_FLAG TEST_CODE)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
   #Set parameters for teset
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(CMAKE_REQUIRED_FLAGS "${ARG_MSVC_FLAG}")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_REQUIRED_FLAGS "${ARG_GCC_FLAG}")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
+  if(ARG_CHECK_WITH_FLAGS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+      set(CMAKE_REQUIRED_FLAGS "${ARG_MSVC_FLAG}")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      set(CMAKE_REQUIRED_FLAGS "${ARG_GCC_FLAG}")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+      set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+      set(CMAKE_REQUIRED_FLAGS "${ARG_CLANG_FLAG}")
+    endif()
   endif()
 
   check_cxx_source_compiles("${ARG_TEST_CODE}" HAVE_${FEATURE})
@@ -51,12 +53,18 @@ function(internal_enable_SSE FEATURE)
 endfunction()
 
 function(internal_check_sse FEATURE)
+  set(options "")
+  set(multiValueArgs "")
+  set(oneValueArgs CHECK_WITH_FLAGS)
+  cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
   if(CPU_ARCH STREQUAL "X86")
     if(FEATURE STREQUAL "SSE42")
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-msse4.2"
         CLANG_FLAG "-msse4.2"
         MSVC_FLAG "/d2archSSE42"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#if defined(_MSC_VER)
          #include <intrin.h>
@@ -78,6 +86,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx"
         CLANG_FLAG "-mavx"
         MSVC_FLAG "/arch:AVX"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
         int main()
@@ -102,6 +111,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx2"
         CLANG_FLAG "-mavx2"
         MSVC_FLAG "/arch:AVX2"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         " #include <immintrin.h>
         int main()
@@ -125,6 +135,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx512"
         CLANG_FLAG "-mavx512"
         MSVC_FLAG "/arch:AVX512"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
        int main()
@@ -146,6 +157,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mpclmul"
         CLANG_FLAG "-mpclmul"
         MSVC_FLAG "/d2archSSE42"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
        int main()
@@ -161,6 +173,7 @@ function(internal_check_sse FEATURE)
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-mcrc"
         CLANG_FLAG "-mcrc"
+        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <cstddef>
        #include <cstdint>
@@ -205,7 +218,7 @@ function(enable_sse FEATURE)
   set(oneValueArgs "")
   cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
-  internal_check_sse(${FEATURE})
+  internal_check_sse(${FEATURE} CHECK_WITH_FLAGS)
   if(ARG_REQUIRED AND NOT CPU_SUPPORTS_${FEATURE})
     message(SEND_ERROR "SSE feature ${FEATURE} not supported on this system.")
   endif()
