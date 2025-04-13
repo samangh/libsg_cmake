@@ -1,5 +1,5 @@
 macro(prioritise_static_libraries)
-  if(MSYS OR MINGW)
+  if(MSYS2 OR MINGW)
     # MSYS and MINGW also use .a for static
     list(PREPEND CMAKE_FIND_LIBRARY_SUFFIXES ".a")
   elseif(UNIX)

@@ -257,7 +257,7 @@ function(setup_target)
       RUNTIME ARCHIVE FRAMEWORK LIBRARY RUNTIME FRAMEWORK BUNDLE PUBLIC_HEADER RESOURCE)
 
     # Copy DLL-dependencies if a shared library or excutable on Windows on install
-    if(WIN32 OR MSYS)
+    if(WIN32 OR MSYS2)
       get_target_property(TARGET_TYPE ${ARG_TARGET} TYPE)
       foreach(TYPE  "EXECUTABLE" "MODULE_LIBRARY" "SHARED_LIBRARY")
         if (TARGET_TYPE STREQUAL ${TYPE})

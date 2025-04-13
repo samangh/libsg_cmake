@@ -29,6 +29,8 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 
+include(GetOS)
+
 ##
 ## libc++
 ##
