@@ -18,9 +18,9 @@ get_processor(CPU_ARCH)
 ##
 
 function(internal_enable_SSE FEATURE)
-  set(options "")
+  set(options CHECK_WITH_FLAGS)
   set(multiValueArgs "")
-  set(oneValueArgs CHECK_WITH_FLAGS GCC_FLAG CLANG_FLAG MSVC_FLAG TEST_CODE)
+  set(oneValueArgs GCC_FLAG CLANG_FLAG MSVC_FLAG TEST_CODE)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
   #Set parameters for teset
@@ -53,10 +53,14 @@ function(internal_enable_SSE FEATURE)
 endfunction()
 
 function(internal_check_sse FEATURE)
-  set(options "")
+  set(options CHECK_WITH_FLAGS)
   set(multiValueArgs "")
-  set(oneValueArgs CHECK_WITH_FLAGS)
+  set(oneValueArgs "")
   cmake_parse_arguments(PARSE_ARGV 1 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
+  if(ARG_CHECK_WITH_FLAGS)
+    set(CHECK_WITH_FLAGS "CHECK_WITH_FLAGS")
+  endif()
 
   if(CPU_ARCH STREQUAL "X86")
     if(FEATURE STREQUAL "SSE42")
@@ -64,7 +68,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-msse4.2"
         CLANG_FLAG "-msse4.2"
         MSVC_FLAG "/d2archSSE42"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#if defined(_MSC_VER)
          #include <intrin.h>
@@ -86,7 +90,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx"
         CLANG_FLAG "-mavx"
         MSVC_FLAG "/arch:AVX"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
         int main()
@@ -111,7 +115,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx2"
         CLANG_FLAG "-mavx2"
         MSVC_FLAG "/arch:AVX2"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         " #include <immintrin.h>
         int main()
@@ -135,7 +139,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mavx512"
         CLANG_FLAG "-mavx512"
         MSVC_FLAG "/arch:AVX512"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
        int main()
@@ -157,7 +161,7 @@ function(internal_check_sse FEATURE)
         GCC_FLAG "-mpclmul"
         CLANG_FLAG "-mpclmul"
         MSVC_FLAG "/d2archSSE42"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <immintrin.h>
        int main()
@@ -173,7 +177,7 @@ function(internal_check_sse FEATURE)
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-mcrc"
         CLANG_FLAG "-mcrc"
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <cstddef>
        #include <cstdint>
@@ -191,7 +195,7 @@ function(internal_check_sse FEATURE)
     elseif(FEATURE STREQUAL "ARM_AES")
       # Can't enabled this, without doing -march=armv8-1+aes for example
       internal_enable_SSE(${FEATURE}
-        CHECK_WITH_FLAGS ${ARG_CHECK_WITH_FLAGS}
+        ${CHECK_WITH_FLAGS}
         TEST_CODE
         "#include <cstddef>
          #include <cstdint>
