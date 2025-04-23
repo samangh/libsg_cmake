@@ -19,6 +19,9 @@ option (USE_SSE "Enable global use of SSE if possible" ARCH_NATIVE)
 # By default, install headers. Note that you can always choose the component wih `--component` flag
 option (INSTALL_${PROJECT_NAME}_HEADERS "Install project headers as part of cmake install" ${PROJECT_IS_TOP_LEVEL})
 option (INSTALL_${PROJECT_NAME}_BINARIES "Install project binaries as part of cmake install" ${PROJECT_IS_TOP_LEVEL})
+option(INSTALL_ALL_HEADERS "Install headers of all targets" OFF)
+option(INSTALL_ALL_BINARIES "Install binaries of all targets" OFF)
+
 
 option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
 # Note, the sanitizer also provides SANITIZE_THREAD and SANITIZE_MEMORY options
