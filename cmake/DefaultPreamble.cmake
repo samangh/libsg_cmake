@@ -183,6 +183,18 @@ if(WIN32 OR MSYS2)
   set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
 endif()
 
+# Set RPATH for all targets (even ones imported via CPM)
+#
+# You can do this via proprty INSTALL_RPATH, but that would only apply
+# to specific targets
+if(NOT CMAKE_INSTALL_RPATH)
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib")
+  elseif(UNIX)
+    set(CMAKE_INSTALL_RPATH "\$ORIGIN;\$ORIGIN/../lib")
+  endif()
+endif()
+
 ##
 ## Packages
 ##
