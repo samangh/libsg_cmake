@@ -202,6 +202,9 @@ endif()
 ## Packages
 ##
 
+# System threading library
+find_package(Threads REQUIRED)
+
 # Setup boost variables, in case any of our projects use it
 include(setup_boost)
 find_package(Sanitizers REQUIRED)
