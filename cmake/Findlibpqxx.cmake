@@ -8,7 +8,7 @@ if(NOT libpqxx_FOUND)
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(libpqxx REQUIRED IMPORTED_TARGET libpqxx)
 
-  add_library(libpqxx ALIAS PkgConfig::libpqxx) # Use our library
+  add_library(libpqxx::pqxx ALIAS PkgConfig::libpqxx) # Use our library
 
   # include(FindPackageHandleStandardArgs)
   # find_package_handle_standard_args(libpqxx
