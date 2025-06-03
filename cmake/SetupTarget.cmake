@@ -1,5 +1,6 @@
 function(setup_target)
   set(options
+    INTERFACE
     LIBRARY
     EXECUTABLE
     INSTALL_HEADERS
@@ -43,8 +44,8 @@ function(setup_target)
     endif()
   endforeach()
 
-  if(NOT ARG_LIBRARY AND NOT ARG_EXECUTABLE)
-    message("Need to either LIBRARY or EXECUTABLE for target ${ARG_TARGET}")
+  if(NOT ARG_LIBRARY AND NOT ARG_EXECUTABLE AND NOT ARG_INTERFACE)
+    message("Need to either INTERFACE, LIBRARY or EXECUTABLE for target ${ARG_TARGET}")
   endif()
 
   if(ARG_LIBRARY AND ARG_EXECUTABLE)
@@ -54,17 +55,19 @@ function(setup_target)
   ##
   ## Source files
   ##
-  if(ARG_SRC_FILES OR ARG_DONT_RECURSE_SRC_DIR)
-    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
-  else()
-    file(GLOB_RECURSE ARG_SRC_FILES
-      ${ARG_DIRECTORY}/src/*.c
-      ${ARG_DIRECTORY}/src/*.cc
-      ${ARG_DIRECTORY}/src/*.cpp)
-  endif()
+  if(NOT ARG_INTERFACE)
+    if(ARG_SRC_FILES OR ARG_DONT_RECURSE_SRC_DIR)
+      message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
+    else()
+      file(GLOB_RECURSE ARG_SRC_FILES
+        ${ARG_DIRECTORY}/src/*.c
+        ${ARG_DIRECTORY}/src/*.cc
+        ${ARG_DIRECTORY}/src/*.cpp)
+    endif()
 
-  if(ARG_ADDITTIONAl_SRC_FILES)
-    list(APPEND SRC_FILES ${ARG_ADDITTIONAl_SRC_FILES})
+    if(ARG_ADDITTIONAl_SRC_FILES)
+      list(APPEND SRC_FILES ${ARG_ADDITTIONAl_SRC_FILES})
+    endif()
   endif()
 
   ##
@@ -94,6 +97,15 @@ function(setup_target)
      OR INSTALL_${ARG_TARGET}_BINARIES)
      set(ARG_INSTALL_BINARIES TRUE)
   endif()
+  ########################################################
+  ## Interface (header only)
+  ########################################################
+
+  if(ARG_INTERFACE)
+    add_library(${ARG_TARGET} INTERFACE)
+    add_library(${ARG_NAMESPACE}::${ARG_NAMESPACE_TARGET} ALIAS ${ARG_TARGET})
+  endif()
+
   ########################################################
   ## Library
   ########################################################
@@ -132,77 +144,114 @@ function(setup_target)
   ##
   ## Headers
   ##
-  target_include_directories(${ARG_TARGET}
-    INTERFACE
-      ${ARG_INCLUDE_INTERFACE}
-    PUBLIC
-      ${ARG_INCLUDE_PUBLIC}
-      $<INSTALL_INTERFACE:include>
-      $<BUILD_INTERFACE:${ARG_DIRECTORY}/include>     # Normal heades
-      $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  #  generate_export_header() files
-    PRIVATE
-      ${ARG_INCLUDE_PRIVATE}
-  )
+  if(ARG_INTERFACE)
+    target_include_directories(${ARG_TARGET}
+      INTERFACE
+        ${ARG_INCLUDE_INTERFACE}
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${ARG_DIRECTORY}/include>     # Normal heades
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  #  generate_export_header() files
+      )
+  else()
+    target_include_directories(${ARG_TARGET}
+      INTERFACE
+        ${ARG_INCLUDE_INTERFACE}
+      PUBLIC
+        ${ARG_INCLUDE_PUBLIC}
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${ARG_DIRECTORY}/include>     # Normal heades
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  #  generate_export_header() files
+      PRIVATE
+        ${ARG_INCLUDE_PRIVATE})
+  endif()
+
 
   ##
   ## Add link libraries and compiler flags
   ##
-  target_link_libraries(${ARG_TARGET}
-    INTERFACE
-      ${ARG_LINK_INTERFACE}
-    PUBLIC
-      ${ARG_LINK_PUBLIC}
-      $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.1>>:${STANDARD_LIBRARY}fs>
-      $<$<AND:$<CXX_COMPILER_ID:Clang>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:${STANDARD_LIBRARY}fs>
-    PRIVATE
-      ${ARG_LINK_PRIVATE})
+  if(ARG_INTERFACE)
+    target_link_libraries(${ARG_TARGET}
+      INTERFACE
+        ${ARG_LINK_INTERFACE}
+        $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.1>>:${STANDARD_LIBRARY}fs>
+        $<$<AND:$<CXX_COMPILER_ID:Clang>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:${STANDARD_LIBRARY}fs>)
+  else()
+    target_link_libraries(${ARG_TARGET}
+      INTERFACE
+        ${ARG_LINK_INTERFACE}
+      PUBLIC
+        ${ARG_LINK_PUBLIC}
+        $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.1>>:${STANDARD_LIBRARY}fs>
+        $<$<AND:$<CXX_COMPILER_ID:Clang>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:${STANDARD_LIBRARY}fs>
+      PRIVATE
+        ${ARG_LINK_PRIVATE})
+  endif()
 
   ##
   ## Compiler features/options
   ##
-  target_compile_features(${ARG_TARGET}
-    INTERFACE
-      ${ARG_COMPILE_FEATURES_INTERFACE}
-    PUBLIC
-      ${ARG_COMPILE_FEATURES_PUBLIC}
-    PRIVATE
-      ${ARG_COMPILE_FEATURES_PRIVATE}
-  )
+  if(ARG_INTERFACE)
+    target_compile_features(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_FEATURES_INTERFACE})
 
-  target_compile_definitions(${ARG_TARGET}
-    INTERFACE
-      ${ARG_COMPILE_DEFINITIONS_INTERFACE}
-    PUBLIC
-      ${ARG_COMPILE_DEFINITIONS_PUBLIC}
-    PRIVATE
-      ${ARG_COMPILE_DEFINITIONS_PRIVATE}
-  )
+    target_compile_definitions(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_DEFINITIONS_INTERFACE})
 
-  target_compile_options(${ARG_TARGET}
-    INTERFACE
-      ${ARG_COMPILE_OPTIONS_INTERFACE}
-    PUBLIC
-      ${ARG_COMPILE_OPTIONS_PUBLIC}
-    PRIVATE
-      ${ARG_COMPILE_OPTIONS_PRIVATE}
-      #Warnings
-      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
-      $<$<CXX_COMPILER_ID:MSVC>:/permissive->
+    target_compile_options(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_OPTIONS_INTERFACE})
+  else()
+    target_compile_features(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_FEATURES_INTERFACE}
+      PUBLIC
+        ${ARG_COMPILE_FEATURES_PUBLIC}
+      PRIVATE
+        ${ARG_COMPILE_FEATURES_PRIVATE}
+    )
 
-      # Enable __cpluscplus header in MSVC for getting C++ version
-      $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>)
+    target_compile_definitions(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_DEFINITIONS_INTERFACE}
+      PUBLIC
+        ${ARG_COMPILE_DEFINITIONS_PUBLIC}
+      PRIVATE
+        ${ARG_COMPILE_DEFINITIONS_PRIVATE}
+    )
+
+    target_compile_options(${ARG_TARGET}
+      INTERFACE
+        ${ARG_COMPILE_OPTIONS_INTERFACE}
+      PUBLIC
+        ${ARG_COMPILE_OPTIONS_PUBLIC}
+      PRIVATE
+        ${ARG_COMPILE_OPTIONS_PRIVATE}
+        #Warnings
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
+        $<$<CXX_COMPILER_ID:MSVC>:/permissive->
+
+        # Enable __cpluscplus header in MSVC for getting C++ version
+        $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>)
+  endif()
 
   ##
   ## Link options
   ##
-  target_link_options(${ARG_TARGET}
-    INTERFACE
-      ${ARG_LINK_OPTIONS_INTERFACE}
-    PUBLIC
-      ${ARG_LINK_OPTIONS_PUBLIC}
-    PRIVATE
-      ${ARG_LINK_OPTIONS_PRIVATE}
-  )
+  if(ARG_INTERFACE)
+    target_link_options(${ARG_TARGET}
+      INTERFACE
+        ${ARG_LINK_OPTIONS_INTERFACE})
+  else()
+    target_link_options(${ARG_TARGET}
+      INTERFACE
+        ${ARG_LINK_OPTIONS_INTERFACE}
+      PUBLIC
+        ${ARG_LINK_OPTIONS_PUBLIC}
+      PRIVATE
+        ${ARG_LINK_OPTIONS_PRIVATE})
+   endif()
 
   ##
   ## Version
@@ -215,7 +264,6 @@ function(setup_target)
   ## Sanitizers
   ##
   add_sanitizers(${ARG_TARGET})
-
 
   ##
   ## Copy dependencies
@@ -243,18 +291,21 @@ function(setup_target)
         PATTERN "*.h"
         PATTERN "*.hpp")
 
-      if (ARG_GENERATE_EXPORT_HEADER)
-        install(
-          FILES "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${NAMESPACE_TARGET_LOWER}.h"
-          DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${NAMESPACE_LOWER}/export/"
-          COMPONENT dev)
-      endif()
+    # Note to self: look at specifying the heaeaders using TARGET_SOURCES(HEADER), file sets, etc.
+    install(TARGETS ${ARG_TARGET} PUBLIC_HEADER)
+
+    if (ARG_GENERATE_EXPORT_HEADER)
+      install(
+        FILES "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${NAMESPACE_TARGET_LOWER}.h"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${NAMESPACE_LOWER}/export/"
+        COMPONENT dev)
+    endif()
   endif()
 
   if(ARG_INSTALL_BINARIES)
     install(TARGETS ${ARG_TARGET}
       #EXPORT  ${PROJECT_NAME}Targets
-      RUNTIME ARCHIVE FRAMEWORK LIBRARY RUNTIME FRAMEWORK BUNDLE PUBLIC_HEADER RESOURCE)
+      RUNTIME ARCHIVE FRAMEWORK LIBRARY RUNTIME FRAMEWORK BUNDLE RESOURCE)
 
     # Copy DLL-dependencies if a shared library or excutable on Windows on install
     if(WIN32 OR MSYS2)
@@ -274,6 +325,10 @@ function(setup_target)
     endif()
   endif()
 
+endfunction()
+
+function(setup_interface)
+  setup_target(INTERFACE ${ARGN})
 endfunction()
 
 function(setup_library)
