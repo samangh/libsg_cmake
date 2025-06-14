@@ -1,4 +1,4 @@
-#include(GetAllTargets)
+include(GetAllTargets)
 #include(DoesTargetUseLinker)
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -15,4 +15,21 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   message(STATUS "           Release: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
   message(STATUS "    RelWithDebInfo: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
   message(STATUS "             Debug: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+
+  get_all_targets(TARGETS)
+
+  message(STATUS "Target C++ standard version:")
+  foreach(TARGET ${TARGETS})
+    get_target_property(cxxStandard ${TARGET} CXX_STANDARD)
+    get_target_property(cStandard ${TARGET} C_STANDARD)
+
+    if(cxxStandard)
+      message(STATUS "  ${TARGET}: c++${cxxStandard}")
+    endif()
+    if(cStandard)
+      message(STATUS "  ${TARGET}: c${cStandard}")
+    endif()
+  endforeach()
+
 endif()
+

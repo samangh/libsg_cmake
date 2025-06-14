@@ -1,6 +1,9 @@
 # Gets all targets, see
 # https://stackoverflow.com/questions/37434946/how-do-i-iterate-over-all-cmake-targets-programmatically/62311397#62311397
 
+# Use like:
+# get_all_targets(ALL_TARGETS)
+
 function(get_all_targets var)
     set(targets)
     get_all_targets_recursive(targets ${CMAKE_CURRENT_SOURCE_DIR})
