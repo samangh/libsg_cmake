@@ -1,7 +1,7 @@
 include(GetAllTargets)
 #include(DoesTargetUseLinker)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(PROJECT_IS_TOP_LEVEL)
   message(STATUS "Global default flags:")
   message(STATUS "  C:")
   message(STATUS "          Compiler: ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION} (${CMAKE_C_COMPILER})")
@@ -31,8 +31,15 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     string(APPEND OUTPUT "      Include directories: $<TARGET_GENEX_EVAL:${TARGET},$<TARGET_PROPERTY:${TARGET},INCLUDE_DIRECTORIES>>\n")
     string(APPEND OUTPUT "\n")
 
-    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/Parameters_${TARGET}.txt CONTENT "${OUTPUT}" TARGET ${TARGET})
-    list(APPEND PARAMETER_FILES  ${CMAKE_BINARY_DIR}/Parameters_${TARGET}.txt)
+    if(MSVC)
+      # In MSVC:
+      #   - all configs are generated
+      #   - the output is generated separately for all langages
+      file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/Parameters_${TARGET}_$<CONFIG>.txt" CONTENT "${OUTPUT}" CONDITION "$<COMPILE_LANGUAGE:CXX>" TARGET ${TARGET})
+    else()
+      file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/Parameters_${TARGET}.txt CONTENT "${OUTPUT}" TARGET ${TARGET})
+    endif()
+    list(APPEND PARAMETER_FILES ${CMAKE_BINARY_DIR}/Parameters_${TARGET}_$<CONFIG>.txt)
   endforeach()
 
   add_custom_target(print_target_parameters
