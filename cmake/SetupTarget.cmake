@@ -284,7 +284,9 @@ function(setup_target)
   ##
   ## Install
   ##
-  if (ARG_INSTALL_HEADERS)
+
+  # Only look at installing headers for library/interface targets
+  if(ARG_INSTALL_HEADERS AND (ARG_LIBRARY OR ARG_INTERFACE))
     install(
       DIRECTORY ${ARG_DIRECTORY}/include/
       DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
