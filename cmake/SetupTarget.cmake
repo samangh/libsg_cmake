@@ -298,7 +298,8 @@ function(setup_target)
     # Note to self: look at specifying the heaeaders using TARGET_SOURCES(HEADER), file sets, etc.
     install(TARGETS ${ARG_TARGET} PUBLIC_HEADER)
 
-    if (ARG_GENERATE_EXPORT_HEADER)
+    # Export heades only makes sense for libraries
+    if (ARG_LIBRARY AND ARG_GENERATE_EXPORT_HEADER)
       install(
         FILES "${CMAKE_BINARY_DIR}/include/${NAMESPACE_LOWER}/export/${NAMESPACE_TARGET_LOWER}.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${NAMESPACE_LOWER}/export/"
