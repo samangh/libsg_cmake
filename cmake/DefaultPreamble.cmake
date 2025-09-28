@@ -114,7 +114,8 @@ macro(_use_sse)
       enable_sse(AVX2 REQUIRED)
       enable_sse(CLMUL) #Only supported on 64-bit systems
   elseif(ARM)
-      enable_sse(ARM_CRC)
+    enable_sse(ARM_CRC)
+    enable_sse(ARM_SHA3) #supported mostly on Apple M1
   endif()
 endmacro()
 
@@ -134,9 +135,17 @@ if(NOT SSE_OR_NATIVE_SET)
   set(SSE_OR_NATIVE_SET)
 endif()
 
+## If running on Apple Silicon, enable some features. We can't tranfer
+## compiled files to non-Apple Silicon systems anyway.
+if(ARM AND DARWIN AND NOT SSE_OR_NATIVE_SET)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8.2-a+crypto+sha3")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv8.2-a+crypto+sha3")
+endif()
+
 ## Enable the CPU_SUPPORTS_xxx flags. this is useful if the SSE package
 ## is not loaded, but the arch or features is manually set but the
-## user. For example, if they do CMAKE_CXX_FLGS="-march=haswell".
+## user. For example, if they do CMAKE_CXX_FLGS="-march=haswell", OR they
+## have enable ARCH_NATIVE, etc.
 check_parent_sse_features()
 
 ##

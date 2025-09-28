@@ -5,7 +5,7 @@
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
 
-set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM_CRC ARM_AES)
+set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM_CRC ARM_AES ARM_SHA3)
 
 ##
 ## Check CPU architecture
@@ -192,7 +192,8 @@ function(internal_check_sse FEATURE)
          auto crc32 = __crc32d(0, *(uint64_t *)data);
          return 0;
        }")
-    elseif(FEATURE STREQUAL "ARM_AES")
+    endif()
+    if(FEATURE STREQUAL "ARM_AES")
       # Can't enabled this, without doing -march=armv8-1+aes for example
       internal_enable_SSE(${FEATURE}
         ${CHECK_WITH_FLAGS}
@@ -207,6 +208,23 @@ function(internal_check_sse FEATURE)
            vmull_p64(0, 0); //part of arm AES extension
            return 0;
          }")
+    endif()
+    if(FEATURE STREQUAL "ARM_SHA3")
+      # Can't enabled this, without doing -march=armv8.2-a+crypto+sha3
+      # Mostly supported by Apple Silicon
+      internal_enable_SSE(${FEATURE}
+        ${CHECK_WITH_FLAGS}
+        TEST_CODE
+        "#include <arm_acle.h>
+        #include <arm_neon.h>
+        #include <cstddef>
+        #include <cstdint>
+
+        int main() {
+            uint64x2_t a, b, c;
+            veor3q_u64(a, b, c);
+            return 0;
+        }")
     endif()
   endif()
 
