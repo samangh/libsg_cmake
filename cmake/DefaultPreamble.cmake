@@ -32,7 +32,15 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 
+##
+## Includes and module paths
+##
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-cmake/cmake")
+
+# Load all custom functions
 include(GetOS)
+include (SetSpaceSeparatedString)
 
 ##
 ## libc++
@@ -156,12 +164,6 @@ check_parent_sse_features()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
-##
-## CMake module paths
-##
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-cmake/cmake")
 
 ##
 ## Global properties
