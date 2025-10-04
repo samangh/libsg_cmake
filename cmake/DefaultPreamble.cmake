@@ -40,8 +40,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-
 
 # Load all custom functions
 include(GetOS)
-include (SetSpaceSeparatedString)
-
+include(SetSpaceSeparatedString)
+include(ConfigureFileWithGeneratorExpressions)
 ##
 ## libc++
 ##
@@ -212,6 +212,8 @@ endif()
 ##
 ## Packages
 ##
+
+find_package(Doxygen)
 
 # System threading library
 find_package(Threads REQUIRED)
