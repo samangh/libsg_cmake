@@ -17,6 +17,9 @@ function(setup_target)
     INCLUDE_INTERFACE
     INCLUDE_PUBLIC
     INCLUDE_PRIVATE
+    SOURCES_INTERFACE
+    SOURCES_PUBLIC
+    SOURCES_PRIVATE
     LINK_INTERFACE
     LINK_PUBLIC
     LINK_PRIVATE
@@ -54,24 +57,6 @@ function(setup_target)
   endif()
 
   ##
-  ## Source files
-  ##
-  if(NOT ARG_INTERFACE)
-    if(ARG_SRC_FILES OR ARG_DONT_RECURSE_SRC_DIR)
-      message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
-    else()
-      file(GLOB_RECURSE ARG_SRC_FILES
-        ${ARG_DIRECTORY}/src/*.c
-        ${ARG_DIRECTORY}/src/*.cc
-        ${ARG_DIRECTORY}/src/*.cpp)
-    endif()
-
-    if(ARG_ADDITTIONAl_SRC_FILES)
-      list(APPEND SRC_FILES ${ARG_ADDITTIONAl_SRC_FILES})
-    endif()
-  endif()
-
-  ##
   ## Namespace bookkeeping
   ##
   if(NOT ARG_NAMESPACE_TARGET)
@@ -98,6 +83,7 @@ function(setup_target)
      OR INSTALL_${ARG_TARGET}_BINARIES)
      set(ARG_INSTALL_BINARIES TRUE)
   endif()
+
   ########################################################
   ## Interface (header only)
   ########################################################
@@ -143,9 +129,32 @@ function(setup_target)
   set_property(GLOBAL APPEND PROPERTY ${PROJECT_NAME}_TARGETS ${ARG_TARGET})
 
   ##
+  ## Source files
+  ##
+  if(NOT ARG_INTERFACE)
+    if(NOT ARG_DONT_RECURSE_SRC_DIR)
+      message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
+    else()
+      file(GLOB_RECURSE SRC_FILES
+        ${ARG_DIRECTORY}/src/*.c
+        ${ARG_DIRECTORY}/src/*.cc
+        ${ARG_DIRECTORY}/src/*.cpp)
+    endif()
+
+    target_sources(${ARG_TARGET}
+      INTERFACE
+        ${ARG_SOURCES_INTERFACE}
+      PUBLIC
+        ${ARG_SOURCES_PUBLIC}
+      PRIVATE
+        ${SRC_FILES}
+        ${ARG_SOURCES_PRIVATE})
+  endif()
+
+  ##
   ## Headers
   ##
-  if(ARG_INTERFACE)
+  If(ARG_INTERFACE)
     target_include_directories(${ARG_TARGET}
       INTERFACE
         ${ARG_INCLUDE_INTERFACE}
