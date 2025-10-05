@@ -312,6 +312,8 @@ function(setup_target)
       # set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
       # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
 
+      set(DOXYGEN_PROJECT_NAME "${PROJECT_NAME} - ${ARG_NAMESPACE_TARGET}")
+
       # Generate Doxygen confile
       set(DOXYFILE_IN  ${PROJECT_BINARY_DIR}/CMakeDoxyfile.in)
       set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

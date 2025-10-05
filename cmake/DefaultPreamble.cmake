@@ -44,6 +44,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-
 include(GetOS)
 include(SetSpaceSeparatedString)
 include(ConfigureFileWithGeneratorExpressions)
+
 ##
 ## libc++
 ##
@@ -221,6 +222,9 @@ if(BUILD_DOCS)
   ## Use default file pattern
   set(DOXYGEN_FILE_PATTERNS "")
   set(DOXYGEN_RECURSIVE "YES")
+  set(DOXYGEN_EXCLUDE_SYMBOLS "std::*")
+  set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
+  set(DOXYGEN_PROJECT_BRIEF ${PROJECT_DESCRIPTION})
 
   # set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
   # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
