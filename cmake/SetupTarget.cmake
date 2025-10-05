@@ -5,11 +5,11 @@ function(setup_target)
     EXECUTABLE
     INSTALL_HEADERS
     INSTALL_BINARIES
-    DONT_RECURSE_SRC_DIR
+    RECURSE_SRC_DIR
+    DONT_GENERATE_DOCS
     GENERATE_EXPORT_HEADER   #Libraries only
     STATIC                   #Libraries only
     SHARED                   #Libraries only
-    DONT_GENERATE_DOCS
   )
   set(multiValueArgs
     INCLUDE_INTERFACE
@@ -129,13 +129,13 @@ function(setup_target)
   ##
   ## Source files
   ##
-  if(ARG_DONT_RECURSE_SRC_DIR)
-    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
-  else()
+  if(ARG_RECURSE_SRC_DIR)
     file(GLOB_RECURSE SEARCHED_SRC_FILES
       ${ARG_DIRECTORY}/src/*.c
       ${ARG_DIRECTORY}/src/*.cc
       ${ARG_DIRECTORY}/src/*.cpp)
+  else()
+    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
   endif()
 
   if(NOT ARG_INTERFACE)
