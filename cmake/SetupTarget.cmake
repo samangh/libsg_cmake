@@ -12,8 +12,6 @@ function(setup_target)
     DONT_GENERATE_DOCS
   )
   set(multiValueArgs
-    SRC_FILES
-    ADDITTIONAl_SRC_FILES
     INCLUDE_INTERFACE
     INCLUDE_PUBLIC
     INCLUDE_PRIVATE
@@ -98,11 +96,11 @@ function(setup_target)
   ########################################################
   if(ARG_LIBRARY)
     if(ARG_STATIC)
-      add_library(${ARG_TARGET} STATIC ${ARG_SRC_FILES})
+      add_library(${ARG_TARGET} STATIC)
     elseif(ARG_SHARED)
-      add_library(${ARG_TARGET} SHARED ${ARG_SRC_FILES})
+      add_library(${ARG_TARGET} SHARED)
     else()
-      add_library(${ARG_TARGET} ${ARG_SRC_FILES})
+      add_library(${ARG_TARGET})
     endif()
     add_library(${ARG_NAMESPACE}::${ARG_NAMESPACE_TARGET} ALIAS ${ARG_TARGET})
 
@@ -120,7 +118,7 @@ function(setup_target)
   ## Executable
   ########################################################
   if(ARG_EXECUTABLE)
-    add_executable(${ARG_TARGET} ${ARG_SRC_FILES})
+    add_executable(${ARG_TARGET})
     add_executable(${ARG_NAMESPACE}::${ARG_NAMESPACE_TARGET} ALIAS ${ARG_TARGET})
   endif()
   ########################################################
@@ -131,24 +129,29 @@ function(setup_target)
   ##
   ## Source files
   ##
-  if(NOT ARG_INTERFACE)
-    if(NOT ARG_DONT_RECURSE_SRC_DIR)
-      message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
-    else()
-      file(GLOB_RECURSE SRC_FILES
-        ${ARG_DIRECTORY}/src/*.c
-        ${ARG_DIRECTORY}/src/*.cc
-        ${ARG_DIRECTORY}/src/*.cpp)
-    endif()
+  if(ARG_DONT_RECURSE_SRC_DIR)
+    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
+  else()
+    file(GLOB_RECURSE SEARCHED_SRC_FILES
+      ${ARG_DIRECTORY}/src/*.c
+      ${ARG_DIRECTORY}/src/*.cc
+      ${ARG_DIRECTORY}/src/*.cpp)
+  endif()
 
+  if(NOT ARG_INTERFACE)
     target_sources(${ARG_TARGET}
       INTERFACE
         ${ARG_SOURCES_INTERFACE}
       PUBLIC
         ${ARG_SOURCES_PUBLIC}
       PRIVATE
-        ${SRC_FILES}
+        ${SEARCHED_SRC_FILES}
         ${ARG_SOURCES_PRIVATE})
+  else()
+    target_sources(${ARG_TARGET}
+      INTERFACE
+        ${ARG_SOURCES_INTERFACE}
+        ${SEARCHED_SRC_FILES})
   endif()
 
   ##
