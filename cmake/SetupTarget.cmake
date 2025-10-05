@@ -9,6 +9,7 @@ function(setup_target)
     GENERATE_EXPORT_HEADER   #Libraries only
     STATIC                   #Libraries only
     SHARED                   #Libraries only
+    DONT_GENERATE_DOCS
   )
   set(multiValueArgs
     SRC_FILES
@@ -279,6 +280,45 @@ function(setup_target)
     add_custom_command(TARGET ${ARG_TARGET} PRE_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${ARG_TARGET}> $<TARGET_RUNTIME_DLLS:${ARG_TARGET}>
       COMMAND_EXPAND_LISTS)
+  endif()
+
+  ##
+  ## Documentation
+  ##
+
+  if(NOT ARG_DONT_GENERATE_DOCS)
+    if(BUILD_DOCS AND (ARG_LIBRARY OR ARG_INTERFACE))
+      # Get source files/directories
+      get_target_property(_SOURCES ${ARG_TARGET} SOURCES)
+      get_target_property(_INTERFACE_HEADERS ${ARG_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+      get_target_property(_HEADERS ${ARG_TARGET} INCLUDE_DIRECTORIES) # Headers, including private
+
+      set_space_separated_string(DOXYGEN_INPUT ${_SOURCES} ${_INTERFACE_HEADERS})
+      set_space_separated_string(DOXYGEN_INCLUDE_PATH ${_HEADERS})
+
+      # Create output DIR
+      set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/docs/${NAMESPACE_LOWER}/${NAMESPACE_TARGET_LOWER})
+      make_directory("${DOXYGEN_OUTPUT_DIRECTORY}")
+
+      # set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
+      # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
+
+      # Generate Doxygen confile
+      set(DOXYFILE_IN  ${PROJECT_BINARY_DIR}/CMakeDoxyfile.in)
+      set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+      configure_file_with_generator_expressions(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+
+      add_custom_target(doc_${ARG_NAMESPACE}_${ARG_NAMESPACE_TARGET}
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation for ${ARG_NAMESPACE}::${ARG_NAMESPACE_TARGET} ..."
+        VERBATIM )
+
+      if(NOT TARGET docs)
+        add_custom_target(docs)
+      endif()
+      add_dependencies(docs doc_${ARG_NAMESPACE}_${ARG_NAMESPACE_TARGET})
+    endif()
   endif()
 
   ##

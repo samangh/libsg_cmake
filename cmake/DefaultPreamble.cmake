@@ -32,6 +32,8 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 
+option(BUILD_DOCS "Generator documentation" OFF)
+
 ##
 ## Includes and module paths
 ##
@@ -210,10 +212,26 @@ if(NOT CMAKE_INSTALL_RPATH)
 endif()
 
 ##
-## Packages
+## Documentation
 ##
 
-find_package(Doxygen)
+if(BUILD_DOCS)
+  find_package(Doxygen)
+
+  ## Use default file pattern
+  set(DOXYGEN_FILE_PATTERNS "")
+  set(DOXYGEN_RECURSIVE "YES")
+
+  # set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
+  # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
+
+  # Import default CMake Doxygen settings
+  include(${PROJECT_BINARY_DIR}/CMakeDoxygenDefaults.cmake)
+endif()
+
+##
+## Packages
+##
 
 # System threading library
 find_package(Threads REQUIRED)
