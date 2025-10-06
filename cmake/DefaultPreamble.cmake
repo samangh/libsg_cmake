@@ -228,11 +228,23 @@ if(BUILD_DOCS)
   set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
 
   set(DOXYGEN_EXTRACT_ALL "YES")
-  # set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
-  # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
 
   # Import default CMake Doxygen settings
   include(${CMAKE_BINARY_DIR}/CMakeDoxygenDefaults.cmake)
+
+  ##
+  ## Doxygen awesome theme
+  ##
+  include(FetchContent)
+  FetchContent_Declare(
+    doxygen-awesome-css
+    URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip)
+  FetchContent_MakeAvailable(doxygen-awesome-css)
+  FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
+  set(DOXYGEN_HTML_EXTRA_STYLESHEET "${AWESOME_CSS_DIR}/doxygen-awesome.css")
+  set(DOXYGEN_HTML_EXTRA_FILES "${AWESOME_CSS_DIR}/doxygen-awesome-fragment-copy-button.js ${AWESOME_CSS_DIR}/doxygen-awesome-paragraph-link.js ${AWESOME_CSS_DIR}/doxygen-awesome-tabs.js")
+  set(DOXYGEN_HTML_COPY_CLIPBOARD "NO")
+  set(DOXYGEN_HTML_HEADER "${CMAKE_CURRENT_LIST_DIR}/../external/doxygen-awesome-css/header.html")
 endif()
 
 ##
