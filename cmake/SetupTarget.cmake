@@ -304,10 +304,12 @@ function(setup_target)
       #get_target_property(_SOURCES ${ARG_TARGET} SOURCES)
       get_target_property(_INTERFACE_HEADERS ${ARG_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
       get_target_property(_HEADERS ${ARG_TARGET} INCLUDE_DIRECTORIES) # Headers, including private
+      get_target_property(_DEFINITIONS ${ARG_TARGET} INTERFACE_COMPILE_DEFINITIONS)
 
       # Don't include _SOURCES, as that cause implementation to leak out (specially if using PIMPL)
       set_space_separated_string(DOXYGEN_INPUT ${_INTERFACE_HEADERS})
       set_space_separated_string(DOXYGEN_INCLUDE_PATH ${_HEADERS})
+      set_space_separated_string(DOXYGEN_PREDEFINED ${_DEFINITIONS})
 
       # Create output DIR
       set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/docs/${NAMESPACE_LOWER}/${NAMESPACE_TARGET_LOWER})
