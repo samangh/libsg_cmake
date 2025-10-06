@@ -327,7 +327,7 @@ function(setup_target)
       set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
       configure_file_with_generator_expressions(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
-      add_custom_target(doc_${ARG_NAMESPACE}_${ARG_NAMESPACE_TARGET}
+      add_custom_target(doc_${NAMESPACE_LOWER}_${NAMESPACE_TARGET_LOWER}
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating API documentation for ${ARG_NAMESPACE}::${ARG_NAMESPACE_TARGET} ..."
@@ -336,7 +336,7 @@ function(setup_target)
       if(NOT TARGET docs)
         add_custom_target(docs)
       endif()
-      add_dependencies(docs doc_${ARG_NAMESPACE}_${ARG_NAMESPACE_TARGET})
+      add_dependencies(docs doc_${NAMESPACE_LOWER}_${NAMESPACE_TARGET_LOWER})
     endif()
   endif()
 
