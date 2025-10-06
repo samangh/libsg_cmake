@@ -231,7 +231,7 @@ if(BUILD_DOCS)
   # set(DOXYGEN_CLANG_ASSISTED_PARSING "YES")
 
   # Import default CMake Doxygen settings
-  include(${PROJECT_BINARY_DIR}/CMakeDoxygenDefaults.cmake)
+  include(${CMAKE_BINARY_DIR}/CMakeDoxygenDefaults.cmake)
 endif()
 
 ##

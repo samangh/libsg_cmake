@@ -321,7 +321,7 @@ function(setup_target)
       set(DOXYGEN_PROJECT_NAME "${PROJECT_NAME} - ${ARG_NAMESPACE_TARGET}")
 
       # Generate Doxygen confile
-      set(DOXYFILE_IN  ${PROJECT_BINARY_DIR}/CMakeDoxyfile.in)
+      set(DOXYFILE_IN  ${CMAKE_BINARY_DIR}/CMakeDoxyfile.in)
       set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
       configure_file_with_generator_expressions(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
