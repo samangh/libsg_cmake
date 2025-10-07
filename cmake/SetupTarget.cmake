@@ -276,9 +276,16 @@ function(setup_target)
     SOVERSION ${PROJECT_VERSION_MAJOR})
 
   ##
-  ## Sanitizers
+  ## Linting tools
   ##
   add_sanitizers(${ARG_TARGET})
+
+  if(USE_LINTING)
+    set_target_properties(${ARG_TARGET} PROPERTIES CXX_CLANG_TIDY
+      clang-tidy -p ${CMAKE_BINARY_DIR} -header-filter=. -checks=clang-analyzer-*,concurrency-*,portability-*)
+    set_target_properties(${ARG_TARGET} PROPERTIES C_CLANG_TIDY
+      clang-tidy -p ${CMAKE_BINARY_DIR} -header-filter=. -checks=clang-analyzer-*,concurrency-*,portability-*)
+  endif()
 
   ##
   ## Copy dependencies

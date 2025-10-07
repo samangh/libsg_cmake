@@ -22,7 +22,7 @@ option (INSTALL_${PROJECT_NAME}_BINARIES "Install project binaries as part of cm
 option(INSTALL_ALL_HEADERS "Install headers of all targets" OFF)
 option(INSTALL_ALL_BINARIES "Install binaries of all targets" OFF)
 
-
+option(USE_LINTING "Use clang-tidy linting tools" OFF)
 option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
 # Note, the sanitizer also provides SANITIZE_THREAD and SANITIZE_MEMORY options
 
