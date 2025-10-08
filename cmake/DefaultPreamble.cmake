@@ -32,7 +32,10 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 
-option(BUILD_DOCS "Generator documentation" OFF)
+option(BUILD_DOCS "Generate documentation (header scan only)" OFF)
+if(BUILD_DOCS)
+  option(BUILD_DOCS_SRC "Scan sources when genreating docs (requires BUILD_DOCS)" OFF)
+endif()
 
 ##
 ## Includes and module paths

@@ -307,14 +307,18 @@ function(setup_target)
 
   if(NOT ARG_DONT_GENERATE_DOCS)
     if(BUILD_DOCS AND (ARG_LIBRARY OR ARG_INTERFACE))
-      # Get source files/directories
-      #get_target_property(_SOURCES ${ARG_TARGET} SOURCES)
+      get_target_property(_SOURCES ${ARG_TARGET} SOURCES)
       get_target_property(_INTERFACE_HEADERS ${ARG_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
       get_target_property(_HEADERS ${ARG_TARGET} INCLUDE_DIRECTORIES) # Headers, including private
       get_target_property(_DEFINITIONS ${ARG_TARGET} INTERFACE_COMPILE_DEFINITIONS)
 
       # Don't include _SOURCES, as that cause implementation to leak out (specially if using PIMPL)
-      set_space_separated_string(DOXYGEN_INPUT ${_INTERFACE_HEADERS})
+      if(BUILD_DOCS_SRC)
+        set_space_separated_string(DOXYGEN_INPUT ${_SOURCES} ${_INTERFACE_HEADERS})
+      else()
+        set_space_separated_string(DOXYGEN_INPUT ${_INTERFACE_HEADERS})
+      endif()
+
       set_space_separated_string(DOXYGEN_INCLUDE_PATH ${_HEADERS})
       set_space_separated_string(DOXYGEN_PREDEFINED ${_DEFINITIONS})
 
