@@ -8,12 +8,6 @@ include(check_cpu_flag)
 set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM_CRC ARM_AES ARM_SHA3)
 
 ##
-## Check CPU architecture
-##
-include(GetProcessor)
-get_processor(CPU_ARCH)
-
-##
 ## _SSE_set_target
 ##
 
@@ -62,7 +56,7 @@ function(internal_check_sse FEATURE)
     set(CHECK_WITH_FLAGS "CHECK_WITH_FLAGS")
   endif()
 
-  if(CPU_ARCH STREQUAL "X86")
+  if(X86)
     if(FEATURE STREQUAL "SSE42")
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-msse4.2"
@@ -172,7 +166,7 @@ function(internal_check_sse FEATURE)
     endif()
   endif()
 
-  if(CPU_ARCH STREQUAL "ARM")
+  if(ARM)
     if(FEATURE STREQUAL "ARM_CRC")
       internal_enable_SSE(${FEATURE}
         GCC_FLAG "-mcrc"

@@ -101,12 +101,6 @@ endif()
 include(GetProcessor)
 get_processor(CPU_ARCH)
 
-if(CPU_ARCH STREQUAL "X86")
-  set(X86 TRUE)
-elseif(CPU_ARCH STREQUAL "ARM")
-  set(ARM TRUE)
-endif()
-
 message(STATUS "Detected CPU architecture: ${CPU_ARCH} (${CMAKE_SYSTEM_PROCESSOR})")
 
 ##
