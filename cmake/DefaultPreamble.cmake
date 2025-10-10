@@ -184,8 +184,14 @@ include(SetupTarget)
 include(CheckCXXSourceCompiles)
 get_standard_library_name(STANDARD_LIBRARY)
 
-# CPM
+##
+## CPM and FetchContent
+##
 include(get_cpm)
+
+# FetchContent: set the timestamps of all extracted contents to the time
+# of the extraction
+cmake_policy(SET CMP0135 NEW)
 
 ##
 ## Install path
