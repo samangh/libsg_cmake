@@ -268,14 +268,14 @@ if(SANITIZE)
 endif()
 
 if(OWN_FMT)
-CPMAddPackage(NAME fmt
-  GITHUB_REPOSITORY fmtlib/fmt
-  GIT_TAG 11.1.4
-  GIT_SHALLOW
-  OPTIONS
-  "BUILD_TESTING OFF"
-  "FMT_INSTALL OFF"
-)
+  CPMAddPackage(NAME fmt
+    URL https://github.com/fmtlib/fmt/archive/refs/tags/12.1.0.zip
+    # GITHUB_REPOSITORY fmtlib/fmt
+    # GIT_TAG 12.1.0
+    # GIT_SHALLOW
+    OPTIONS
+    "BUILD_TESTING OFF"
+    "FMT_INSTALL OFF")
 endif()
 
 if(OWN_UV)
