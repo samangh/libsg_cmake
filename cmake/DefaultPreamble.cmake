@@ -279,11 +279,12 @@ if(OWN_FMT)
 endif()
 
 if(OWN_UV)
-CPMAddPackage(NAME libuv
-  GITHUB_REPOSITORY libuv/libuv
-  VERSION 1.50.0
-  GIT_SHALLOW
-  OPTIONS
+  CPMAddPackage(NAME libuv
+    URL https://github.com/libuv/libuv/archive/refs/tags/v1.51.0.zip
+    # GITHUB_REPOSITORY libuv/libuv
+    # VERSION 1.51.0
+    # GIT_SHALLOW
+    OPTIONS
     "BUILD_TESTING OFF")
 endif()
 
