@@ -32,6 +32,8 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 
+option(COVERAGE "Add coverage flags to all targets" OFF)
+
 option(BUILD_DOCS "Generate documentation (header scan only)" OFF)
 if(BUILD_DOCS)
   option(BUILD_DOCS_SRC "Scan sources when genreating docs (requires BUILD_DOCS)" OFF)
@@ -213,6 +215,16 @@ if(NOT CMAKE_INSTALL_RPATH)
   elseif(UNIX)
     set(CMAKE_INSTALL_RPATH "\$ORIGIN;\$ORIGIN/../lib")
   endif()
+endif()
+
+##
+## Code Coverage
+##
+
+# Check for coverage and initiate parameters
+include(Coverage)
+if(COVERAGE)
+  coverage_init()
 endif()
 
 ##

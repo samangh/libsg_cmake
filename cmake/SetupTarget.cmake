@@ -243,6 +243,7 @@ function(setup_target)
         ${ARG_COMPILE_OPTIONS_PUBLIC}
       PRIVATE
         ${ARG_COMPILE_OPTIONS_PRIVATE}
+
         #Warnings
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
         $<$<CXX_COMPILER_ID:MSVC>:/permissive->
@@ -299,6 +300,14 @@ function(setup_target)
     add_custom_command(TARGET ${ARG_TARGET} PRE_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${ARG_TARGET}> $<TARGET_RUNTIME_DLLS:${ARG_TARGET}>
       COMMAND_EXPAND_LISTS)
+  endif()
+
+  ##
+  ## Coverage
+  ##
+
+  if(COVERAGE AND (NOT ARG_INTERFACE))
+    coverage_add_target(${ARG_TARGET})
   endif()
 
   ##
