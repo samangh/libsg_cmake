@@ -1,15 +1,18 @@
 ##
 ## Checks that coverage conditions are met, and if so sets the correct paramters
 ##
-function(coverage_init)
+## This a macro on purpose (so that the COVERAGE_DIR sets in the same
+## level as the caller)
+##
+macro(coverage_init)
   if(NOT (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?[Cc]lang"))
     message(FATAL_ERROR "Coverage option only compatible with clang")
   endif()
 
   if(NOT COVERAGE_DIR)
-    set(COVERAGE_DIR ${CMAKE_BINARY_DIR}/coverage PARENT_SCOPE)
+    set(COVERAGE_DIR ${CMAKE_BINARY_DIR}/coverage)
   endif()
-endfunction()
+endmacro()
 
 
 ##
