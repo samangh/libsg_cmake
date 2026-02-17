@@ -5,6 +5,10 @@ if(PROJECT_IS_TOP_LEVEL)
   get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 
   message(STATUS "Global default flags:")
+  if (MSVC)
+    message(STATUS "Windows target (WINVER/_WIN32_WINNT): ${WINVER}")
+  endif()
+
   foreach(LANG ${LANGUAGES})
     message(STATUS "  ${LANG}:")
     message(STATUS "          Compiler: ${CMAKE_${LANG}_COMPILER_ID} ${CMAKE_${LANG}_COMPILER_VERSION} (${CMAKE_${LANG}_COMPILER})")

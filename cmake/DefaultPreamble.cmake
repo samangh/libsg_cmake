@@ -85,6 +85,23 @@ if(USE_STATIC_LIBS)
 endif()
 
 ##
+## Windows version
+##
+
+if(MSVC)
+  # Target Windows 7 and later by default
+  if(NOT DEFINED WINVER)
+    set(WINVER "0x0601")
+    message(STATUS "Setting supported Windows version to 7 or later (modify WINVER to change this)")
+  endif()
+
+  # Set the target Windows version. This must be the same for all libraries (otherwise you'll see weird problems, e.g.
+  # in boost)
+  add_compile_definitions(_WIN32_WINNT=${WINVER})
+  add_compile_definitions(WINVER=${WINVER})
+endif()
+
+##
 ## Enable link-time optimisation for all targets
 ##
 

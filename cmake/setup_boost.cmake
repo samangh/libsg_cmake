@@ -11,9 +11,6 @@ endif()
 
 # Configure Boost in Windows
 if(MSVC)
-  # Target Windows 7 and higher
-  add_compile_definitions(_WIN32_WINNT=_WIN32_WINNT_WIN7)
-
   # Boost tries to use auto linking (i.e. #pragma lib in headers) to tell
   # the compiler what to link to. This does not work properly on
   # Widnows/MSVC.
