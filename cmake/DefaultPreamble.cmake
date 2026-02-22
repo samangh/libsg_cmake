@@ -86,9 +86,17 @@ if(USE_STATIC_LIBS)
 endif()
 
 ##
-## Windows version
+## Windows stuff
 ##
 
+# Enable prepreocessor conformance, this is needed for some preprocessor
+# macros like __VA_OPT__.
+if(MSVC)
+  add_to_var(CMAKE_C_FLAGS "/Zc:preprocessor")
+  add_to_var(CMAKE_CXX_FLAGS "/Zc:preprocessor")
+endif()
+
+# Windows target version stuff
 if(MSVC)
   # Target Windows 7 and later by default
   if(NOT DEFINED WINVER)
@@ -96,8 +104,8 @@ if(MSVC)
     message(STATUS "Setting supported Windows version to 7 or later (modify WINVER to change this)")
   endif()
 
-  # Set the target Windows version. This must be the same for all libraries (otherwise you'll see weird problems, e.g.
-  # in boost)
+  # Set the target Windows version. This must be the same for all
+  # libraries (otherwise you'll see weird problems, e.g.  in boost)
   add_compile_definitions(_WIN32_WINNT=${WINVER})
   add_compile_definitions(WINVER=${WINVER})
 endif()
