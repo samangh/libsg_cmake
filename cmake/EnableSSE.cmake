@@ -4,6 +4,7 @@
 
 include(CheckCXXCompilerFlag)
 include(check_cpu_flag)
+include(AddToVar)
 
 set(SSE_FEATURES SSE42 AVX AVX2 AVX512 CLMUL ARM_CRC ARM_AES ARM_SHA3)
 
@@ -35,12 +36,8 @@ function(internal_enable_SSE FEATURE)
   # Set CXX flags if requested
   if(HAVE_${FEATURE})
     add_compile_definitions(CPU_SUPPORTS_${FEATURE})
-    if(NOT CMAKE_CXX_FLAGS MATCHES ".* ${CMAKE_REQUIRED_FLAGS} .*")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_REQUIRED_FLAGS} " PARENT_SCOPE)
-    endif()
-    if(NOT CMAKE_C_FLAGS MATCHES ".* ${CMAKE_REQUIRED_FLAGS} .*")
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_REQUIRED_FLAGS} " PARENT_SCOPE)
-    endif()
+    add_to_var(CMAKE_C_FLAGS "${CMAKE_REQUIRED_FLAGS}")
+    add_to_var(CMAKE_CXX_FLAGS "${CMAKE_REQUIRED_FLAGS}")
   endif()
 
   set(CPU_SUPPORTS_${FEATURE} ${HAVE_${FEATURE}} PARENT_SCOPE)

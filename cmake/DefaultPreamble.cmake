@@ -49,6 +49,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-
 include(GetOS)
 include(SetSpaceSeparatedString)
 include(ConfigureFileWithGeneratorExpressions)
+include(AddToVar)
 
 ##
 ## libc++
