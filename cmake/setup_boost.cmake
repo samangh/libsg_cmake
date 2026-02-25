@@ -9,6 +9,12 @@ if (USE_STATIC_RUNTIME)
   set(Boost_USE_STATIC_RUNTIME ON)
 endif()
 
+# Disable location/function infromation from Boost ASIO exception messages
+if(NOT(LIBSG_EXCEPTION_DETAILS OR LIBSG_STACKTRACE))
+  add_compile_definitions(BOOST_ASIO_DISABLE_SOURCE_LOCATION)
+  add_compile_definitions(BOOST_ASIO_DISABLE_ERROR_LOCATION)
+endif()
+
 # Configure Boost in Windows
 if(MSVC)
   # Boost tries to use auto linking (i.e. #pragma lib in headers) to tell
