@@ -1,0 +1,3 @@
+if(VCPKG_TARGET_TRIPLET)
+  set(VCPKG TRUE)
+endif()
