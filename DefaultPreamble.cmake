@@ -43,7 +43,7 @@ endif()
 ## Includes and module paths
 ##
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../external/sanitizers-cmake/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/sanitizers-cmake/cmake")
 
 # Load all custom functions
 include(GetOS)
@@ -287,7 +287,7 @@ if(BUILD_DOCS)
   set(DOXYGEN_HTML_EXTRA_STYLESHEET "${AWESOME_CSS_DIR}/doxygen-awesome.css")
   set(DOXYGEN_HTML_EXTRA_FILES "${AWESOME_CSS_DIR}/doxygen-awesome-fragment-copy-button.js ${AWESOME_CSS_DIR}/doxygen-awesome-paragraph-link.js ${AWESOME_CSS_DIR}/doxygen-awesome-tabs.js")
   set(DOXYGEN_HTML_COPY_CLIPBOARD "NO")
-  set(DOXYGEN_HTML_HEADER "${CMAKE_CURRENT_LIST_DIR}/../external/doxygen-awesome-css/header.html")
+  set(DOXYGEN_HTML_HEADER "${CMAKE_CURRENT_LIST_DIR}/external/doxygen-awesome-css/header.html")
 endif()
 
 ##
