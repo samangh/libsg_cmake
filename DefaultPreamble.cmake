@@ -24,7 +24,7 @@ option(INSTALL_ALL_BINARIES "Install binaries of all targets" OFF)
 
 option(USE_LINTING "Use clang-tidy linting tools" OFF)
 option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
-# Note, the sanitizer also provides SANITIZE_THREAD and SANITIZE_MEMORY options
+# Note, the sanitizer also provides SANITIZE_ADDRESS, SANITIZE_MEMORY, SANITIZE_THREAD or SANITIZE_UNDEFINED
 
 option (USE_LIBC++ "Use clang libc++" OFF)
 
@@ -299,12 +299,12 @@ find_package(Threads REQUIRED)
 
 # Setup boost variables, in case any of our projects use it
 include(setup_boost)
-find_package(Sanitizers REQUIRED)
 
-# Enable default SANitizer options
 if(SANITIZE)
-  set(SANITIZE_ADDRESS ON)
-  set(SANITIZE_UNDEFINED ON)
+  find_package(Sanitizers REQUIRED)
+  if (NOT (SANITIZE_ADDRESS OR SANITIZE_MEMORY OR SANITIZE_THREAD OR SANITIZE_UNDEFINED))
+    message(WARNING "Sanitizers enabled, but no specific sanitizers set. Use SANITIZE_ADDRESS, SANITIZE_MEMORY, SANITIZE_THREAD or SANITIZE_UNDEFINED options")
+  endif()
 endif()
 
 if(OWN_FMT)
