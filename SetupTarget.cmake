@@ -279,7 +279,9 @@ function(setup_target)
   ##
   ## Linting tools
   ##
-  add_sanitizers(${ARG_TARGET})
+  if(SANITIZE)
+    add_sanitizers(${ARG_TARGET})
+  endif()
 
   if(USE_LINTING)
     set_target_properties(${ARG_TARGET} PROPERTIES CXX_CLANG_TIDY
