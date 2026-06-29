@@ -34,7 +34,8 @@ function(coverage_add_exe TARGET)
   set(options "")
   set(multiValueArgs
       EXCLUDE # List of folders to excluded, these are regexes (e.g. "*/test/*")
-      ARGUMENTS # Arguments to pass to thr executable
+      ARGUMENTS # Arguments to pass to th executable
+      ENVIRONMENT # Environment variables
   )
   set(oneValueArgs "")
   cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -48,7 +49,7 @@ function(coverage_add_exe TARGET)
     # The dummy file, which is always mising, forces this command to always run
     OUTPUT ${PROFILE_FILE} ${PROFILE_FILE}_dummy
     COMMAND
-      ${CMAKE_COMMAND} -E env LLVM_PROFILE_FILE=${PROFILE_FILE}
+      ${CMAKE_COMMAND} -E env LLVM_PROFILE_FILE=${PROFILE_FILE} ${ARG_ENVIRONMENT} --
       $<TARGET_FILE:${TARGET}> $<$<BOOL:${ARG_ARGUMENTS}>:${ARG_ARGUMENTS}>
     COMMAND
       llvm-profdata merge -sparse -output=${PROFILE_FILE} ${PROFILE_FILE}
