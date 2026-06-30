@@ -19,7 +19,7 @@ endmacro()
 ## Enables coverage instrumentation for target
 ##
 function(coverage_add_target TARGET)
-    target_compile_options(${TARGET} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+    target_compile_options(${TARGET} PRIVATE -fprofile-instr-generate -fcoverage-mapping -fprofile-update=prefer-atomic)
     target_link_options(${TARGET} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endfunction()
 
