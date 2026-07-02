@@ -34,6 +34,7 @@ function(setup_target)
     LINK_OPTIONS_INTERFACE
     LINK_OPTIONS_PUBLIC
     LINK_OPTIONS_PRIVATE
+    PROPERTIES
   )
   set(oneValueArgs TARGET NAMESPACE NAMESPACE_TARGET DIRECTORY)
   cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -269,6 +270,15 @@ function(setup_target)
       PRIVATE
         ${ARG_LINK_OPTIONS_PRIVATE})
    endif()
+
+  ##
+  ## Properties
+  ##
+  if(ARG_PROPERTIES)
+    set_target_properties(${ARG_TARGET}
+      PROPERTIES ${ARG_PROPERTIES})
+  endif()
+
   ##
   ## Default symbol visibility
   ##
