@@ -7,6 +7,7 @@ function(setup_target)
     INSTALL_BINARIES
     RECURSE_SRC_DIR
     DONT_GENERATE_DOCS
+    VISIBILITY_HIDDEN
     GENERATE_EXPORT_HEADER   #Libraries only
     STATIC                   #Libraries only
     SHARED                   #Libraries only
@@ -268,6 +269,16 @@ function(setup_target)
       PRIVATE
         ${ARG_LINK_OPTIONS_PRIVATE})
    endif()
+  ##
+  ## Default symbol visibility
+  ##
+  if(ARG_VISIBILITY_HIDDEN)
+    set_target_properties(${ARG_TARGET}
+      PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        C_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON)
+  endif()
 
   ##
   ## Version
