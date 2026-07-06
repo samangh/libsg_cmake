@@ -136,8 +136,6 @@ function(setup_target)
       ${ARG_DIRECTORY}/src/*.c
       ${ARG_DIRECTORY}/src/*.cc
       ${ARG_DIRECTORY}/src/*.cpp)
-  else()
-    message("target ${ARG_TARGET}: not recursively searching for source files, remember to include them manually")
   endif()
 
   if(NOT ARG_INTERFACE)
