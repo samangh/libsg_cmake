@@ -31,6 +31,10 @@ option (USE_LIBC++ "Use clang libc++" OFF)
 # Commonly used packages
 option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
+option(OWN_BOOST "Use own Boost" OFF)
+if(OWN_BOOST)
+  option(BOOST_SKIP_INSTALL_RULES "Don't include boost headers with install" OFF)
+endif()
 
 option(COVERAGE "Add coverage flags to all targets" OFF)
 
