@@ -1,6 +1,18 @@
 include(GetAllTargets)
 #include(DoesTargetUseLinker)
 
+#Get all targets
+get_all_targets(TARGETS)
+
+# Once a sanitizer is enabled, it needs to be used everywhere. We do
+# this here even if we are not the top level project (e.g. as the top
+# project may not be using these CMake scripts)
+if(SANITIZE)
+  foreach(TARGET ${TARGETS})
+    add_sanitizers(${TARGET})
+  endforeach()
+endif()
+
 if(PROJECT_IS_TOP_LEVEL)
   get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 
@@ -18,7 +30,6 @@ if(PROJECT_IS_TOP_LEVEL)
     message(STATUS "             Debug: ${CMAKE_${LANG}_FLAGS} ${CMAKE_${LANG}_FLAGS_DEBUG}")
   endforeach()
 
-  get_all_targets(TARGETS)
   set(PARAMETER_FILES)
   foreach(TARGET ${TARGETS})
     set(OUTPUT "Target ${TARGET}\n")
