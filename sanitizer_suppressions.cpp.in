@@ -1,0 +1,6 @@
+extern "C" __attribute__((used, visibility("default"))) const char*
+@SUPPRESSIONS_FUNCTION@() {
+    return R"LIBSG_SUPP(
+@SUPPRESSIONS_TEXT@
+)LIBSG_SUPP";
+}

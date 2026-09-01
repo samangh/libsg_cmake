@@ -1,3 +1,5 @@
+include(AddSanitizerSuppression)
+
 function(setup_target)
   set(options
     INTERFACE
@@ -36,7 +38,16 @@ function(setup_target)
     LINK_OPTIONS_PRIVATE
     PROPERTIES
   )
-  set(oneValueArgs TARGET NAMESPACE NAMESPACE_TARGET DIRECTORY)
+  set(oneValueArgs
+    TARGET
+    NAMESPACE
+    NAMESPACE_TARGET
+    DIRECTORY
+    ASAN_SUPPRESSION_FILE  #AddressSanitizer suppression file
+    TSAN_SUPPRESSION_FILE  #ThreadSanitizer suppression file
+    UBSAN_SUPPRESSION_FILE #UndefinedBehaviourSanitizer suppression file
+    NSAN_SUPPRESSION_FILE  #NumericalSanitizer suppression file
+  )
   cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   ##
@@ -300,6 +311,15 @@ function(setup_target)
   ##
   if(SANITIZE)
     add_sanitizers(${ARG_TARGET})
+
+    # Suppression files
+    foreach(san "ASAN" "TSAN" "LSAN" "UBSAN" "NSAN")
+      if(ARG_${san}_SUPPRESSION_FILE)
+        add_sanitizer_suppression(${ARG_TARGET}
+          SANITIZER ${san}
+          SUPPRESSION_FILE ${ARG_${san}_SUPPRESSION_FILE})
+      endif()
+    endforeach()
   endif()
 
   if(USE_LINTING)
