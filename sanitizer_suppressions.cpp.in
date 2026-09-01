@@ -1,3 +1,6 @@
+/* `used` attribute needed because otherwise the function might be
+ * stripped, as it's not used by the binary itself */
+
 extern "C" __attribute__((used, visibility("default"))) const char*
 @SUPPRESSIONS_FUNCTION@() {
     return R"LIBSG_SUPP(
