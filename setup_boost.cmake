@@ -15,7 +15,7 @@ else()
 endif()
 
 # Disable location/function infromation from Boost ASIO exception messages
-if(NOT(LIBSG_EXCEPTION_DETAILS OR LIBSG_STACKTRACE))
+if(NOT LIBSG_STACKTRACE)
   add_compile_definitions(BOOST_ASIO_DISABLE_SOURCE_LOCATION)
   add_compile_definitions(BOOST_ASIO_DISABLE_ERROR_LOCATION)
 endif()
