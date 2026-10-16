@@ -1,6 +1,6 @@
 include(AddSanitizerSuppression)
 
-function(setup_target)
+function(sg_setup_target)
   set(options
     INTERFACE
     LIBRARY
@@ -453,13 +453,13 @@ function(setup_target)
 endfunction()
 
 function(setup_interface)
-  setup_target(INTERFACE ${ARGN})
+  sg_setup_target(INTERFACE ${ARGN})
 endfunction()
 
 function(setup_library)
-  setup_target(LIBRARY ${ARGN})
+  sg_setup_target(LIBRARY ${ARGN})
 endfunction()
 
 function(setup_executable)
-  setup_target(EXECUTABLE ${ARGN})
+  sg_setup_target(EXECUTABLE ${ARGN})
 endfunction()
