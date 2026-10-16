@@ -313,7 +313,7 @@ endif()
 
 if(OWN_FMT)
   CPMAddPackage(NAME fmt
-    URL https://github.com/fmtlib/fmt/archive/refs/tags/12.1.0.zip
+    URL https://github.com/fmtlib/fmt/archive/refs/tags/12.2.0.zip
     # GITHUB_REPOSITORY fmtlib/fmt
     # GIT_TAG 12.1.0
     # GIT_SHALLOW
