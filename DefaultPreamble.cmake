@@ -102,8 +102,8 @@ if(MSVC)
   add_to_var(CMAKE_CXX_FLAGS "/Zc:preprocessor")
 endif()
 
-# Windows target version stuff
-if(MSVC)
+# Windows target version stuff.
+if(WIN32)
   # Target Windows 7 and later by default
   if(NOT DEFINED WINVER)
     set(WINVER "0x0601")

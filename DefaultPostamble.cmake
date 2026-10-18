@@ -17,7 +17,7 @@ if(PROJECT_IS_TOP_LEVEL)
   get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 
   message(STATUS "Global default flags:")
-  if (MSVC)
+  if (WIN32)
     message(STATUS "Windows target (WINVER/_WIN32_WINNT): ${WINVER}")
   endif()
 
