@@ -29,7 +29,6 @@ option (SANITIZE "Enable address, eak and undefined Behaviour sanitizers" OFF)
 option (USE_LIBC++ "Use clang libc++" OFF)
 
 # Commonly used packages
-option(OWN_UV "Use our own copy of libuv" OFF)
 option(OWN_FMT "Use own libfmt" OFF)
 option(OWN_BOOST "Use own Boost" OFF)
 if(OWN_BOOST)
@@ -320,16 +319,6 @@ if(OWN_FMT)
     OPTIONS
     "BUILD_TESTING OFF"
     "FMT_INSTALL OFF")
-endif()
-
-if(OWN_UV)
-  CPMAddPackage(NAME libuv
-    URL https://github.com/libuv/libuv/archive/refs/tags/v1.51.0.zip
-    # GITHUB_REPOSITORY libuv/libuv
-    # VERSION 1.51.0
-    # GIT_SHALLOW
-    OPTIONS
-    "BUILD_TESTING OFF")
 endif()
 
 
