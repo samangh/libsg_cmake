@@ -309,7 +309,7 @@ function(sg_setup_target)
   ##
   ## Linting tools
   ##
-  if(SANITIZE)
+  if(SANITIZE AND NOT ARG_INTERFACE)
     add_sanitizers(${ARG_TARGET})
 
     # Suppression files

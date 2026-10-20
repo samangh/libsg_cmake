@@ -7,9 +7,15 @@ get_all_targets(TARGETS)
 # Once a sanitizer is enabled, it needs to be used everywhere. We do
 # this here even if we are not the top level project (e.g. as the top
 # project may not be using these CMake scripts)
+#
+# An INTERFACE library is never compiled itself, so it cannot be sanitized.
+
 if(SANITIZE)
   foreach(TARGET ${TARGETS})
-    add_sanitizers(${TARGET})
+    get_target_property(TARGET_TYPE ${TARGET} TYPE)
+    if(NOT TARGET_TYPE STREQUAL "INTERFACE_LIBRARY")
+      add_sanitizers(${TARGET})
+    endif()
   endforeach()
 endif()
 
